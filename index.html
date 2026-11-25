@@ -575,7 +575,7 @@ function playVoiceFile(file,fallbackText='',who='SGT. SILVA'){if(!file){browserS
 function stopVoice(){if(storyVoice){storyVoice.pause();storyVoice.currentTime=0}if(window.speechSynthesis)speechSynthesis.cancel()}
 function showIntroLine(){const d=INTRO[introIndex];if(!d){beginStory();return}$('cinTitle').textContent='MÉXICO · 03:17';$('cinText').textContent='“'+d.t+'”';$('cinWho').textContent='— '+d.w+'  |  rádio criptografado';$('cinNext').textContent=introIndex===INTRO.length-1?'INICIAR OPERAÇÃO ▶':'PRÓXIMA FALA ▶';if(d.audio)playVoiceFile(d.audio,d.t,d.w);else browserSpeak(d.t,d.w)}
 function introNext(){introIndex++;showIntroLine()}
-function beginStory(){MUS.L.game=[ASSETS.combat];stopVoice();susStop();cancelAnimationFrame(mxRaf);M.cut=0;M.seen=1;$('cin').style.display='none';M.storyRun=1;launchGame(M.storyMode||'solo')}
+function beginStory(){stopVoice();susStop();cancelAnimationFrame(mxRaf);M.cut=0;M.seen=1;$('cin').style.display='none';M.storyRun=1;launchGame(M.storyMode||'solo')}
 // Wrapper stores the chosen solo/duo setting while the briefing is shown.
 const _storyStart=startGame;startGame=function(mode){if(mode==='solo'||mode==='coop'){playIntro(mode);return}_storyStart(mode)};
 function storySay(w,t,rate=.9,audioFile=''){ $('sub').textContent='['+w+'] '+t;$('sub').style.display='block';clearTimeout(VOZ.tm);VOZ.tm=setTimeout(()=>$('sub').style.display='none',5600);if(audioFile)playVoiceFile(audioFile,t,w);else browserSpeak(t,w)}
@@ -614,14 +614,14 @@ function storyHandoff(){if(M.storyAct!==3)return;const fallen=players[0],partner
 
 // ================= CORREÇÕES + ABERTURA (vídeo + mapa do México) =================
 // >>> NOMES DOS ARQUIVOS (coloque no repositório; me avise se os nomes forem outros) <<<
-const ASSETS={videos:[['video.mkv','video.mp4'],['202611251927.mp4']],menu:'universfield-horror-background-atmosphere-156462.mp3',combat:'fronbondi_skegs-drone-high-tension-and-suspense-ambient-background-162365.mp3'};MUS.L.menu=[ASSETS.menu];
+const ASSETS={video:'video/intro.mp4',music:'sfx/suspense.mp3'};
 let sus=null,mxRaf=0;
-function susPlay(){try{MUS.a.pause()}catch(e){}}
-function susStop(){}
+function susPlay(){try{MUS.a.pause()}catch(e){}if(!sus){sus=new Audio(ASSETS.music);sus.loop=true}sus.volume=Math.min(1,SET.mvol*1.6+.2);sus.play().catch(()=>{})}
+function susStop(){if(sus)sus.pause()}
 function playIntro(mode){M.storyMode=mode;M.storyRun=1;if(M.seen){beginStory();return}M.cut=1;$('menu').style.display='none';susPlay();
- const w=$('vidw'),v=$('vid'),q=ASSETS.videos.slice();let done=0,alts=[];const go=()=>{if(done)return;done=1;w.style.display='none';v.pause();mapScene()},nx=()=>{if(done)return;if(!alts.length){const g=q.shift();if(!g)return go();alts=g.slice()}v.src=alts.shift();v.play().catch(()=>{})};
- w.style.display='block';v.onended=()=>{alts=[];nx()};v.onerror=nx;$('vskip').onclick=go;nx()}
-function mapScene(){MUS.i=0;MUS.load();$('cin').style.display='flex';$('mx').style.display='';introIndex=0;showIntroLine();cancelAnimationFrame(mxRaf);mxDraw()}
+ const w=$('vidw'),v=$('vid');let done=0;const go=()=>{if(done)return;done=1;w.style.display='none';v.pause();mapScene()};
+ w.style.display='block';v.src=ASSETS.video;v.onended=go;v.onerror=go;$('vskip').onclick=go;v.play().catch(go)}
+function mapScene(){$('cin').style.display='flex';$('mx').style.display='';introIndex=0;showIntroLine();cancelAnimationFrame(mxRaf);mxDraw()}
 const MXP=[[-117.1,32.5],[-114.7,32.7],[-111,31.3],[-108.2,31.3],[-106.5,31.8],[-104.5,29.6],[-103,29],[-101.4,29.8],[-99.5,27.5],[-97.2,25.9],[-97.8,22.5],[-97.2,20.2],[-96,19],[-94.5,18.2],[-92,18.6],[-90.5,19.5],[-90.4,21],[-87,21.5],[-87.5,18.5],[-88.3,18],[-89,17.8],[-91,17.3],[-92.2,15],[-94,16],[-96,15.7],[-99,16.7],[-101.5,17.9],[-105,19.5],[-105.5,21.5],[-106.5,23.2],[-109,25.5],[-111,27.5],[-112.8,29.5]],
 MXB=[[-117.1,32.5],[-115,30],[-113,27],[-111.5,24.5],[-110,23],[-109.5,23.2],[-110.3,24.2],[-112,26],[-113.5,29],[-114.8,31.5]];
 function mxDraw(){const c=$('mx'),x=c.getContext('2d'),W=c.width,H=c.height,P=a=>[(a[0]+118)/32*W*.96+W*.02,(33.5-a[1])/19*H*.96+H*.02],t=performance.now()/1000;
