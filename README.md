@@ -1,0 +1,1 @@
+# Opreacao-codigo-0--O-fim-dos-tempos-
