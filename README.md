@@ -11,6 +11,7 @@ Abra `index.html` em um navegador moderno. O Three.js r128 está incluído local
 - **P1:** WASD mover, mouse mirar, botão esquerdo atirar, botão direito mirar, Shift correr, Espaço pular, R recarregar, Q ou roda trocar arma, E pegar arma, F interagir, Esc pausar.
 - **P2/controle:** analógico esquerdo mover, analógico direito mirar, RT atirar, LT mirar, X recarregar, A pular, RB trocar arma, B pegar arma, Y interagir/lanterna nos zumbis, LB/L3 correr, Start pausar.
 - **Zumbis:** F liga/desliga a lanterna; na campanha, F interage com alvos e objetivos.
+- **Mapa tático:** M abre/fecha o mapa completo e mostra a missão atual na História Solo e nos modos Zumbi; os objetivos aparecem em amarelo no mapa. Nos outros modos, M continua alternando a música.
 
 ## Campanha — três atos
 

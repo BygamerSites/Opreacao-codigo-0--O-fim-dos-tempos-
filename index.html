@@ -35,6 +35,11 @@ button:hover{background:#22c55e;color:#000}
 #lock{position:fixed;top:55%;width:100%;text-align:center;color:#fff;z-index:65;display:none;text-shadow:0 0 4px #000}
 #cin{display:none;position:fixed;inset:0;z-index:110;background:linear-gradient(90deg,rgba(2,5,7,.97),rgba(5,13,13,.77)),repeating-linear-gradient(0deg,transparent 0 3px,rgba(0,0,0,.1) 3px 4px);padding:8vh max(7vw,24px);flex-direction:column;justify-content:center;border:1px solid #285744}.cin-kicker{color:#facc15;letter-spacing:.3em;font-size:.8rem}.cin-title{color:#4ade80}#cin h2{font-size:clamp(2rem,7vw,5rem);color:#4ade80;margin:14px 0;text-shadow:0 0 18px #14532d}#cinText{max-width:850px;font-size:clamp(1rem,2.5vw,1.45rem);line-height:1.6;color:#eee;min-height:5em;white-space:pre-wrap}#cinWho{color:#facc15;margin:18px 0 28px;letter-spacing:.12em}#cin button{width:min(360px,90vw);margin:5px 0}#cinSkip{background:#252525;border-color:#777}#menu{overflow:auto}#setup{display:none;width:min(580px,94vw)}#setup h3{color:#facc15;margin:12px 0 6px;font-size:.95rem}.opt{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}.opt button{padding:8px 10px;font-size:.78rem;background:#1a1a1a;border-color:#555}.opt button.on{background:#22c55e;color:#000;border-color:#fff}.wd{font-size:.75rem;color:#bbb;margin-top:5px;min-height:2.2em}
 .mm{position:absolute;top:64px;right:10px;width:130px;height:130px;border:2px solid #4ade80;border-radius:50%;background:rgba(0,0,0,.5)}
+#tacticalMap{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:clamp(10px,3vw,28px);background:rgba(2,7,5,.95);pointer-events:none}
+.tMapWindow{width:min(96vw,1120px);max-height:94vh;overflow:auto;padding:clamp(12px,2.5vw,24px);border:1px solid #4ade80;background:linear-gradient(145deg,rgba(8,22,14,.98),rgba(2,7,5,.98));box-shadow:0 0 36px rgba(34,197,94,.18)}
+.tMapTop{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;border-bottom:1px solid rgba(74,222,128,.35);padding-bottom:10px}.tMapTop small{color:#facc15;letter-spacing:.24em}.tMapTop h2{color:#4ade80;font-size:clamp(1.1rem,3vw,1.8rem);margin-top:4px}.tMapKey{color:#facc15;font-size:.8rem;text-align:right}
+.tMapLayout{display:flex;align-items:center;justify-content:center;gap:20px}.tMapInfo{width:min(26vw,250px);color:#ddd;line-height:1.5}.tMapInfo h3{font-size:.85rem;color:#facc15;letter-spacing:.14em;margin-bottom:7px}.tMapInfo strong{display:block;color:#fff;font-size:1rem;margin-bottom:8px}.tMapInfo p{color:#bbb;font-size:.83rem;overflow-wrap:anywhere}.tMapLegend{margin-top:18px;padding-top:12px;border-top:1px solid rgba(74,222,128,.25);font-size:.76rem;color:#bbb;line-height:1.9}.tMapLegend b{color:#facc15}#tacticalMapCanvas{position:static!important;inset:auto!important;display:block;width:min(68vh,56vw,660px);height:auto;aspect-ratio:1;max-height:72vh;border:1px solid #4ade80;background:#07110b;filter:none!important;image-rendering:auto!important}
+@media(max-width:720px){.tMapWindow{padding:10px}.tMapTop{align-items:flex-start}.tMapKey{font-size:.68rem;max-width:42vw}.tMapLayout{flex-direction:column;gap:8px}.tMapInfo{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:4px 10px}.tMapInfo h3,.tMapLegend{grid-column:1/-1}.tMapInfo strong,.tMapInfo p{font-size:.75rem;margin:0}.tMapLegend{margin-top:7px;padding-top:6px}#tacticalMapCanvas{width:min(82vw,53vh,520px);max-height:53vh}}
 #pause,#opts,#audioOpts{position:fixed;inset:0;z-index:125;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:rgba(0,0,0,.9);overflow:auto;padding:18px}#opts{z-index:130}#audioOpts{z-index:140}#ob{width:min(460px,92vw);text-align:left}#ob label{display:block;margin:10px 0;font-size:.85rem;color:#ddd}#ob input[type=range]{width:100%}#ob select{background:#111;color:#fff;border:1px solid #4ade80;padding:4px}.aPanel{width:min(560px,94vw);margin:14px 0;padding:16px 20px;border:1px solid #4ade80;background:rgba(4,12,8,.92);text-align:left}.aRow{margin:14px 0}.aRow label{display:flex;justify-content:space-between;gap:12px;color:#eee;font-size:.92rem}.aRow output{color:#4ade80;font-weight:bold;min-width:48px;text-align:right}.aRow input[type=range]{width:100%;accent-color:#4ade80}.aCheck{display:flex;align-items:center;gap:10px;margin:12px 0;color:#ddd}.aHint{color:#aaa;font-size:.78rem;line-height:1.5;margin-top:12px}.aActions{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;width:min(560px,94vw)}.aActions button{flex:1 1 180px}.pk{position:absolute;top:62%;width:100%;text-align:center;color:#facc15;text-shadow:0 0 4px #000;display:none;font-size:1.05rem}
 #vidw{display:none;position:fixed;inset:0;z-index:112;background:#000}#vid{width:100%;height:100%;object-fit:contain}#vskip{position:absolute;bottom:20px;right:20px;width:auto!important;padding:8px 16px}#mx{position:absolute;inset:auto 3vw 5vh auto;width:min(30vw,420px);height:auto;z-index:0;border:1px solid #285744}#cin>*:not(#mx):not(#csw){position:relative;z-index:1}#cinText{max-width:min(850px,40vw)}
 #vgo{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:auto!important;padding:18px 34px;font-size:1.2rem}
@@ -56,7 +61,7 @@ button:hover{background:#22c55e;color:#000}
 <button onclick="openSetup('zsolo')">4. Modo Zumbi (Solo)</button>
 <button onclick="openSetup('zcoop')">5. Modo Zumbi (Dupla)</button><button onclick="openAudioSettings()" style="background:#26352d;border-color:#4ade80">🔊 Configuração de áudio</button><button onclick="openOpts()" style="background:#333;border-color:#888">⚙ Opções</button></div><div id="setup"></div>
 <div id="pad">🎮 Controle Xbox 360: aperte qualquer botão para conectar</div>
-<p style="margin-top:12px;font-size:.8rem;color:#888;max-width:620px">P1: WASD + mouse (clique p/ travar) · Shift correr · R recarregar · botão esq. atira · Espaço pula · Q troca arma · E pega arma do chão · botão dir. mira · F interagir / lanterna (zumbi) · Esc pausa<br>Controle: analógico esq. move · dir. mira · RT atira · X recarrega · A pula · RB troca arma · B pega arma · LT mira · Y lanterna · Start pausa · LB/L3 corre<br>Tela dividida: P1 teclado/mouse, P2 controle. Em solo o controle também funciona.</p>
+<p style="margin-top:12px;font-size:.8rem;color:#888;max-width:620px">P1: WASD + mouse (clique p/ travar) · Shift correr · R recarregar · botão esq. atira · Espaço pula · Q troca arma · E pega arma do chão · botão dir. mira · F interagir / lanterna (zumbi) · Esc pausa<br>Controle: analógico esq. move · dir. mira · RT atira · X recarrega · A pula · RB troca arma · B pega arma · LT mira · Y lanterna · Start pausa · LB/L3 corre<br>Tela dividida: P1 teclado/mouse, P2 controle. Em solo o controle também funciona.<br>M abre o mapa completo na História Solo e nos modos Zumbi.</p>
 <p id="err">Não foi possível carregar o Three.js (precisa de internet na primeira vez). Verifique a conexão e recarregue.</p>
 </div>
 <div id="vidw"><video id="vid" playsinline></video><button id="vgo">▶ CLIQUE PARA INICIAR</button><button id="vskip">PULAR ▶</button><div id="vmsg" style="position:absolute;bottom:14%;width:100%;text-align:center;color:#facc15"></div><script>(function(){const $=i=>document.getElementById(i),w=$('vidw'),v=$('vid'),g=$('vgo'),sk=$('vskip'),msg=$('vmsg'),q=[['video.mkv','video.mp4'],['202611251927.mp4']];let done=0,alts=[],ok=0;w.style.display='block';sk.style.display='none';
@@ -65,6 +70,7 @@ button:hover{background:#22c55e;color:#000}
  v.onended=()=>{alts=[];nx()};v.onerror=nx;v.onplaying=()=>{ok=1};sk.onclick=go;
  g.onclick=()=>{g.style.display='none';sk.style.display='block';setTimeout(()=>{try{MUS.a.pause()}catch(e){}},0);nx()}})()</script></div><div id="cin" aria-live="polite"><canvas id="mx" width="900" height="560"></canvas><div id="csw"><canvas id="cs"></canvas><div id="csn"></div><div id="csr">● CÂMERA 3ª PESSOA</div></div><div class="cin-kicker">OPERAÇÃO 0</div><h2 id="cinTitle">FIM DOS TEMPOS</h2><div id="cinText"></div><div id="cinWho"></div><button id="cinNext" onclick="introNext()">CONTINUAR ▶</button><button id="cinSkip" onclick="beginStory()">PULAR CENA</button></div>
 <div id="hud"><div id="sl"></div><div id="mb"><div id="mt"></div><div id="mp"></div></div><div id="sub"></div><div id="lock">CLIQUE NA TELA PARA TRAVAR O MOUSE</div></div>
+<div id="tacticalMap" role="dialog" aria-modal="true" aria-labelledby="tacticalMapHeading" aria-hidden="true"><div class="tMapWindow"><div class="tMapTop"><div><small>PAINEL TÁTICO</small><h2 id="tacticalMapHeading">MAPA DA MISSÃO</h2></div><div class="tMapKey">M · VOLTAR AO JOGO</div></div><div class="tMapLayout"><canvas id="tacticalMapCanvas" width="720" height="720"></canvas><aside class="tMapInfo"><h3>MISSÃO ATUAL</h3><strong id="tacticalMapMission">—</strong><p id="tacticalMapStatus">—</p><div class="tMapLegend"><b>LEGENDA</b><br>◆ Objetivo da missão<br>● Jogador / aliado<br>● Inimigos<br>● Itens no chão<br><span style="color:#facc15">Objetivos permanecem amarelos no minimapa.</span></div></aside></div></div></div>
 <div id="end"><h1 id="et"></h1><p id="ed" style="margin:20px;font-size:1.2rem"></p><div class="bg" style="margin:auto"><button onclick="restart()">↻ Jogar de novo</button><button onclick="location.reload()">Voltar ao menu</button></div></div>
 <div id="pause" style="display:none"><h1>PAUSADO</h1><div class="bg" style="margin-top:20px"><button onclick="pause(false)">▶ Continuar</button><button onclick="restart()">↻ Reiniciar partida</button><button onclick="openOpts()">⚙ Opções</button><button onclick="openAudioSettings()">🔊 Configuração de áudio</button><button onclick="location.reload()">⏏ Sair para o menu</button></div></div>
 <div id="opts" style="display:none"><h1 style="font-size:2rem">OPÇÕES</h1><div id="ob"></div><div class="bg" style="margin-top:14px"><button onclick="$('opts').style.display='none'">Voltar</button></div></div><div id="audioOpts" style="display:none" role="dialog" aria-modal="true" aria-labelledby="audioTitle"><h1 id="audioTitle" style="font-size:clamp(1.7rem,5vw,2.6rem)">CONFIGURAÇÃO DE ÁUDIO</h1><p class="sub">Ajuste cada categoria em tempo real; as preferências ficam salvas neste navegador.</p><div id="audioBody" class="aPanel"></div><div class="aActions"><button onclick="previewAudio()">▶ Testar disparo</button><button onclick="closeAudioSettings()" style="background:#333;border-color:#888">Voltar</button></div></div>
@@ -99,7 +105,7 @@ function openOpts(){const RG=(l,k,a,b,st)=>`<label>${l}: <b id="v_${k}">${SET[k]
  $('ob').innerHTML=RG('Sensibilidade do mouse','sens',.2,3,.05)+RG('Sensibilidade do controle','pads',.2,3,.05)+CK('Inverter eixo Y (olhar)','inv')+RG('Volume dos efeitos','vol',0,1,.05)+CK('Música','music')+RG('Volume da música','mvol',0,1,.05)+CK('Estática de rádio depois das falas','radio')+CK('Voz de IA','voice','(só para falas sem arquivo na pasta voz/; as falas com arquivo tocam sempre; as legendas continuam)')+RG('Volume da voz','vvol',0,1,.05)+RG('Campo de visão (FOV)','fov',60,110,1)
  +`<label>Qualidade gráfica: <select onchange="SET.q=+this.value;sv()">${['Retrô pixelado','Média (suave)','Alta (nítida)'].map((n,i)=>`<option value="${i}" ${SET.q===i?'selected':''}>${n}</option>`).join('')}</select></label>`+CK('Sombras','sh','(vale ao iniciar/reiniciar a partida)')+'<div class="bg" style="margin:14px auto"><button onclick="openAudioSettings()">🔊 Configuração de áudio</button></div>';$('opts').style.display='flex'}
 function pause(on){if(M.over||!players.length||M.cut)return;M.paused=on;$('pause').style.display=on?'flex':'none';if(on){if(M.heliAmbience)SFX.stopLoop('helicopter_rotor_loop',.25);document.exitPointerLock();mouseDown=mouseR=false}else{mdx=mdy=0;$('opts').style.display='none';if(M.heliAmbience)SFX.loop('helicopter_rotor_loop',.48);if(players[0].kb)renderer.domElement.requestPointerLock()}}
-document.addEventListener('pointerlockchange',()=>{if(!document.pointerLockElement&&players.length&&!M.over&&!M.paused&&!M.cut)pause(true)});
+document.addEventListener('pointerlockchange',()=>{if(!document.pointerLockElement&&players.length&&!M.over&&!M.paused&&!M.cut&&!M.mapOpen)pause(true)});
 addEventListener('keydown',e=>{if(e.code==='KeyP'&&players.length)pause(!M.paused)});
 function restart(){const m=M.mode;LID++;if(renderer){renderer.domElement.remove();renderer.dispose()}document.querySelectorAll('.ph').forEach(e=>e.remove());
  players=[];enemies=[];allies=[];obst=[];OM=[];fx=[];gens=[];fires=[];picks=[];wpns=[];EMB=null;Object.assign(M,{over:false,paused:false,mission:0,wave:0,t:0,brk:0,items:null,ext:null,zone:null,boss:null,heliAmbience:0,storyAct:0,storyStep:0,storyItems:[],storyDisguise:0});
@@ -113,7 +119,7 @@ function renderSetup(){const m=SEL.mode,sp=m==='coop'||m==='pvp'||m==='zcoop',st
  for(let i=0;i<(sp?2:1);i++)[['w','PRIMÁRIA'],['s','SECUNDÁRIA']].forEach(a=>{h+=`<h3>ARMA ${a[1]} DO P${i+1}</h3><div class="opt">`+Object.keys(WP).map(k=>`<button class="${SEL[a[0]][i]===k?'on':''}" onclick="SEL.${a[0]}[${i}]='${k}';renderSetup()">${WP[k].n}</button>`).join('')+`</div><div class="wd">${WP[SEL[a[0]][i]].t}</div>`});
  h+='<div class="bg" style="margin:16px auto 0"><button onclick="startGame(SEL.mode)">▶ COMEÇAR</button><button onclick="location.reload()" style="background:#333;border-color:#777">Voltar</button></div>';
  $('setup').style.display='block';$('setup').innerHTML=h}
-const M={mode:'',split:false,over:false,mission:0,wave:0,t:0,brk:0,storyRun:0,storyAct:0,storyStep:0,storyItems:[],storyDisguise:0};
+const M={mode:'',split:false,over:false,mapOpen:false,mission:0,wave:0,t:0,brk:0,storyRun:0,storyAct:0,storyStep:0,storyItems:[],storyDisguise:0};
 const keys={};let mdx=0,mdy=0,mouseDown=false,mouseR=false,WHL=0,EMB=null;
 const dd=(a,b)=>Math.hypot(a.x-b.x,a.z-b.z);
 function startExtractionHelicopter(){if(M.heliAmbience)return;M.heliAmbience=1;SFX.loop('helicopter_rotor_loop',.48)}
@@ -164,7 +170,7 @@ say(txt,who='SGT. SILVA',prio){
 const MUS={a:new Audio(),mode:'menu',i:0,d:0,err:0,
 L:{menu:['arctsound-cinematic-suspence-209667.mp3'],game:['jonasblakewood-hard-rock-hard-rock-music-595520__1_.mp3','alec_koff-epic-cyber-rock-industrial-metal-493403.mp3']},
 vol(){return Math.max(0,Math.min(1,SET.mvol*SET.masterVol*(this.d?.35:1)))},
-apply(){const a=this.a;a.volume=this.vol();$('mus').textContent=SET.music?'🎵 MÚSICA: LIGADA (M)':'🔇 MÚSICA: DESLIGADA (M)';if(!SET.music){if(!a.paused)a.pause();return}if(a.paused)a.play().catch(()=>{})},
+apply(){const a=this.a;a.volume=this.vol();const key=tacticalMapAvailable()?'M: MAPA':'M';$('mus').textContent=(SET.music?'🎵 MÚSICA: LIGADA':'🔇 MÚSICA: DESLIGADA')+' ('+key+')';if(!SET.music){if(!a.paused)a.pause();return}if(a.paused)a.play().catch(()=>{})},
 load(){const a=this.a,l=this.L[this.mode],u=this.cur=l[this.i%l.length];this.alt=0;a.loop=l.length===1;a.src=u;a.volume=this.vol();if(SET.music)a.play().catch(()=>{})},
 set(m){if(this.mode===m&&this.on)return;this.mode=m;this.on=1;this.i=m==='game'?R()*this.L.game.length|0:0;this.load()},
 next(){this.i++;this.load()},
@@ -176,7 +182,7 @@ init(){const a=this.a;a.preload='auto';a.onended=()=>this.next();a.onplaying=()=
 MUS.init();
 // primeiro gesto do usuario libera audio (musica + efeitos de menu)
 ['pointerdown','keydown'].forEach(ev=>addEventListener(ev,()=>{SFX.init();MUS.apply()},{capture:true,once:true}));
-addEventListener('keydown',e=>{if(e.code==='KeyM')MUS.toggle()});
+addEventListener('keydown',e=>{if(e.code==='KeyM'&&!e.repeat){if(tacticalMapAvailable())toggleTacticalMap();else MUS.toggle()}});
 // sons de selecionar opcoes
 {let hv=null;
  document.addEventListener('mouseover',e=>{const b=e.target.closest&&e.target.closest('button,select');if(b&&b!==hv)SFX.play('uih',.4);hv=b||null});
@@ -248,6 +254,8 @@ function buildMap2(map){
  for(let i=0;i<14;i++){const q=spot((R()-.5)*2*(B-10),(R()-.5)*2*(B-10),12);mkPick(q[0],q[1])}
  scatterW();if(sec)detail(B,'#222a32','#4a5058',160,.4);else detail(B,'#d9b47a','#a8803f',400,.5);atmos(sec?0x88aacc:0xe8c080);
  OM=obst.map(o=>o.mesh)}
+function tacticalMapAvailable(){return(M.mode==='solo'&&!!M.storyRun)||M.mode==='zsolo'||M.mode==='zcoop'}
+function missionMapTargets(){const out=[...gens.map(g=>g.o&&g.o.mesh&&g.o.mesh.position).filter(Boolean),...(M.zone&&M.zone.parent?[M.zone.position]:[]),...(M.items||[]).filter(o=>o&&o.parent).map(o=>o.position),...(M.ext&&M.ext.parent?[M.ext.position]:[])];if(M.storyTarget&&Number.isFinite(M.storyTarget.x)&&Number.isFinite(M.storyTarget.z))out.push(M.storyTarget);(M.storyItems||[]).forEach(o=>{if(o&&Number.isFinite(o.x)&&Number.isFinite(o.z))out.push(o)});return out}
 function drawMM(p){const c=p.h.mm,x=c.getContext('2d'),S=130,C=65,RG=50,k=C/RG*.92;x.clearRect(0,0,S,S);if(p.dead)return;
  const sn=Math.sin(p.yaw),cs=Math.cos(p.yaw),tr=(o,cl)=>{const dx=o.x-p.pos.x,dz=o.z-p.pos.z;let rx=dx*cs-dz*sn,fw=-dx*sn-dz*cs,L=Math.hypot(rx,fw);if(L>RG){if(!cl)return null;rx*=RG/L;fw*=RG/L}return[C+rx*k,C-fw*k]};
  x.strokeStyle='rgba(74,222,128,.3)';x.beginPath();x.arc(C,C,C*.5,0,6.3);x.stroke();
@@ -256,8 +264,18 @@ function drawMM(p){const c=p.h.mm,x=c.getContext('2d'),S=130,C=65,RG=50,k=C/RG*.
  allies.forEach(a=>dot(a.pos,'#22c55e',3));
  if(M.mode!=='pvp')players.forEach(o=>{if(o!==p&&!o.dead)dot(o.pos,'#60a5fa',3.5)});
  enemies.forEach(e=>dot(e.pos,e.type==='boss'?'#e879f9':'#f43f5e',e.type==='boss'?5:3));
- [...gens.map(g=>g.o.mesh.position),...(M.zone&&M.zone.parent?[M.zone.position]:[]),...(M.items||[]).filter(k2=>k2.parent).map(k2=>k2.position),...(M.ext&&M.ext.parent?[M.ext.position]:[])].forEach(o=>{const q=tr(o,1);x.save();x.translate(q[0],q[1]);x.rotate(.785);x.fillStyle='#facc15';x.fillRect(-4,-4,8,8);x.restore()});
+ missionMapTargets().forEach(o=>{const q=tr(o,1);if(!q)return;x.save();x.translate(q[0],q[1]);x.rotate(.785);x.fillStyle='#facc15';x.strokeStyle='#111';x.lineWidth=1.5;x.fillRect(-4,-4,8,8);x.strokeRect(-4,-4,8,8);x.restore()});
  x.fillStyle='#fff';x.beginPath();x.moveTo(C,C-6);x.lineTo(C-4,C+4);x.lineTo(C+4,C+4);x.fill()}
+function drawTacticalMap(){if(!M.mapOpen)return;const c=$('tacticalMapCanvas'),x=c.getContext('2d'),S=c.width,pad=34,B=Math.max(20,Number(M.B)||96),scale=(S-pad*2)/(2*B),pt=(wx,wz)=>[pad+(wx+B)*scale,pad+(wz+B)*scale];
+ x.clearRect(0,0,S,S);x.fillStyle='#07110b';x.fillRect(0,0,S,S);
+ x.strokeStyle='rgba(74,222,128,.14)';x.lineWidth=1;for(let v=-B;v<=B+.01;v+=B/4){const [gx,gy]=pt(v,-B),[hx,hy]=pt(v,B),[ix,iy]=pt(-B,v),[jx,jy]=pt(B,v);x.beginPath();x.moveTo(gx,gy);x.lineTo(hx,hy);x.moveTo(ix,iy);x.lineTo(jx,jy);x.stroke()}
+ x.fillStyle='rgba(74,222,128,.16)';x.strokeStyle='rgba(74,222,128,.62)';for(const o of obst){if(!Number.isFinite(o.x0)||!Number.isFinite(o.z0))continue;const a=pt(o.x0,o.z0),b=pt(o.x1,o.z1);x.fillRect(a[0],a[1],b[0]-a[0],b[1]-a[1]);x.strokeRect(a[0],a[1],b[0]-a[0],b[1]-a[1])}
+ x.strokeStyle='#4ade80';x.lineWidth=2;x.strokeRect(...pt(-B,-B),S-2*pad,S-2*pad);
+ const dot=(o,col,r,label)=>{if(!o||!Number.isFinite(o.x)||!Number.isFinite(o.z))return;const q=pt(o.x,o.z);x.fillStyle=col;x.beginPath();x.arc(q[0],q[1],r,0,Math.PI*2);x.fill();if(label){x.fillStyle='#fff';x.font='bold 14px Courier New';x.fillText(label,q[0]+r+3,q[1]+4)}};
+ picks.forEach(o=>{if(o.on)dot(o,'#86efac',4)});allies.forEach((a,i)=>dot(a.pos,'#22c55e',6,'A'+(i+1)));enemies.forEach(e=>dot(e.pos,e.type==='boss'?'#e879f9':'#f43f5e',e.type==='boss'?7:4));players.forEach((p,i)=>{if(!p.dead)dot(p.pos,i?'#60a5fa':'#fff',7,'P'+p.id)});
+ missionMapTargets().forEach(o=>{const q=pt(o.x,o.z);x.save();x.translate(q[0],q[1]);x.rotate(Math.PI/4);x.fillStyle='#facc15';x.strokeStyle='#111';x.lineWidth=2;x.fillRect(-7,-7,14,14);x.strokeRect(-7,-7,14,14);x.restore()});
+ $('tacticalMapMission').textContent=$('mt').textContent||'MODO ZUMBI';$('tacticalMapStatus').textContent=$('mp').textContent||'Explore a área e sobreviva.'}
+function toggleTacticalMap(){if(!tacticalMapAvailable()||!players.length||M.over||M.cut||M.paused)return;M.mapOpen=!M.mapOpen;$('tacticalMap').style.display=M.mapOpen?'flex':'none';$('tacticalMap').setAttribute('aria-hidden',String(!M.mapOpen));if(M.mapOpen){for(const k in keys)keys[k]=false;mouseDown=mouseR=false;mdx=mdy=0;drawTacticalMap();if(document.pointerLockElement)document.exitPointerLock()}else if(players[0].kb&&!M.paused&&renderer)renderer.domElement.requestPointerLock()}
 function sunSh(dl){if(!SET.sh)return;dl.castShadow=true;dl.shadow.mapSize.set(2048,2048);const c=dl.shadow.camera;c.left=c.bottom=-110;c.right=c.top=110;c.near=1;c.far=500;dl.shadow.bias=-.0006}
 function detail(B,c1,c2,n,sc){const im=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshLambertMaterial({color:0xffffff}),n),m=new THREE.Matrix4(),q=new THREE.Quaternion(),e=new THREE.Euler(),C=[new THREE.Color(c1),new THREE.Color(c2)];
  for(let i=0;i<n;i++){const k=sc*(.4+R()*1.2),h=k*(.3+R()*.9);e.set(0,R()*6.28,0);q.setFromEuler(e);m.compose(new THREE.Vector3((R()-.5)*2*(B-2),h/2,(R()-.5)*2*(B-2)),q,new THREE.Vector3(k,h,k));im.setMatrixAt(i,m);im.setColorAt(i,C[R()*2|0].clone().multiplyScalar(.7+R()*.5))}
@@ -347,7 +365,7 @@ function buildHud(p){
 function startGame(mode){if(mode==='solo'||mode==='coop'){M.storyRun=1;$('cin').style.display='flex';introIndex=0;showIntroLine();return}M.storyRun=0;launchGame(mode)}
 function launchGame(mode){
  if(typeof THREE==='undefined')return;
- LID++;M.paused=false;M.mode=mode;M.split=mode==='coop'||mode==='pvp'||mode==='zcoop';SFX.init();MUS.set('game');
+ LID++;M.paused=false;M.mapOpen=false;$('tacticalMap').style.display='none';M.mode=mode;M.split=mode==='coop'||mode==='pvp'||mode==='zcoop';SFX.init();MUS.set('game');MUS.apply();
  $('cin').style.display='none';$('menu').style.display='none';$('hud').style.display='block';$('rec').style.display='block';if(M.split)$('sl').style.display='block';
  scene=new THREE.Scene();renderer=new THREE.WebGLRenderer({antialias:SET.q>0});renderer.setPixelRatio(1);renderer.shadowMap.enabled=!!SET.sh;renderer.shadowMap.type=THREE.PCFSoftShadowMap;document.body.prepend(renderer.domElement);
  buildMap((mode==='solo'||mode==='coop')&&M.storyRun?'mexico':(mode==='solo'||mode==='coop'?'base':SEL.map));
@@ -551,7 +569,7 @@ function updAlly(a,dt){
 // ================= LOOP =================
 function loop(now,id=LID){
  if(M.over||id!==LID)return;requestAnimationFrame(t=>loop(t,id));
- const dt=Math.min(.05,(now-last)/1000);last=now;{const st=[...navigator.getGamepads()].some(g=>g&&g.buttons[9]&&g.buttons[9].pressed);if(st&&!M.sp)pause(!M.paused);M.sp=st}if(M.paused||M.cut)return;M.t+=dt;M.dt=dt;
+ const dt=Math.min(.05,(now-last)/1000);last=now;{const st=[...navigator.getGamepads()].some(g=>g&&g.buttons[9]&&g.buttons[9].pressed);if(st&&!M.sp)pause(!M.paused);M.sp=st}if(M.paused||M.cut||M.mapOpen)return;M.t+=dt;M.dt=dt;
  PADS=[...(navigator.getGamepads?navigator.getGamepads():[])].filter(g=>g&&g.connected);
  players.forEach(p=>updPlayer(p,dt));mdx=mdy=0;WHL=0;
  enemies.slice().forEach(e=>updEnemy(e,dt));allies.slice().forEach(a=>updAlly(a,dt));
@@ -568,7 +586,7 @@ function loop(now,id=LID){
  players.forEach(p=>{const h=p.h;h.st.textContent=`P${p.id} ${p.slots.map((s,i)=>i===p.cur?'['+WP[s.k].n+']':WP[s.k].n).join(' ')}  VIDA ${Math.max(0,p.hp|0)}  ${p.rel>0?'RECARREGANDO':p.ammo+'/'+p.res}  ABATES ${p.kills}${p.lt?(p.fon?'  🔦':'  🔦off'):''}`;
   h.hb.style.width=Math.max(0,p.hp)+'%';h.vg.style.opacity=Math.min(1,p.dmgT*2.5+(p.hp<30&&!p.dead?.3:0));h.hm.style.opacity=p.hitT>0?1:0;
   if(p.dead){h.wt.style.display='block';h.wt.textContent='ABATIDO'}drawMM(p)})
- $('lock').style.display=(!document.pointerLockElement&&players[0].kb)?'block':'none';
+ if(M.mapOpen)drawTacticalMap();$('lock').style.display=(!document.pointerLockElement&&players[0].kb)?'block':'none';
  const W=renderer.domElement.width,H=renderer.domElement.height;renderer.setScissorTest(true);
  players.forEach((p,i)=>{const x=M.split?i*W/2:0,w=M.split?W/2:W;renderer.setViewport(x,0,w,H);renderer.setScissor(x,0,w,H);renderer.render(scene,p.cam)})}
 
