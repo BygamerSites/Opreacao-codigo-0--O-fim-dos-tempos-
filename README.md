@@ -38,6 +38,10 @@ As falas principais são gravações compactas em MP3, armazenadas em `voz/` e c
 
 As falas seguintes cobrem a inserção, a captura, as coordenadas, o disfarce, os reforços, a senha, a queda do protagonista e o memorial; as cenas de extração, interrogatório, infiltração, desarme e velório usam arquivos MP3 em `voz/`.
 
+## Efeitos sonoros
+
+Os efeitos também ficam no repositório, em `sfx/`, e são carregados junto do jogo: cada uma das oito armas (M4, AK-47, UMP, MP5, pistola, escopeta, revólver e sniper) tem um disparo próprio. Há ainda sons de fuzil inimigo, impacto em inimigos, dano recebido pelo jogador, esforço ao erguer o sargento e vocalizações de zumbi para gemido, ataque e derrota.
+
 ## Publicação
 
 O repositório conectado é público. O GitHub Pages ainda não está habilitado neste repositório; para testar sem Pages, abra `index.html` ou use um servidor estático. Os arquivos de áudio ficam na pasta `voz/` e devem ser mantidos junto do HTML para que as falas gravadas sejam encontradas.

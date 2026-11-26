@@ -73,14 +73,14 @@ button:hover{background:#22c55e;color:#000}
 const $=i=>document.getElementById(i),R=Math.random,pick=a=>a[R()*a.length|0];
 if(typeof THREE==='undefined')$('err').style.display='block';
 let scene,renderer,players=[],enemies=[],allies=[],obst=[],OM=[],fx=[],gens=[],fires=[],picks=[],wpns=[],PADS=[],last=0,LID=0;
-const WP={m4:{n:'M4',t:'Equilibrada: dano e cadência normais.',d:34,r:.11,mag:30,res:120,sp:.006,rl:1.4,pel:1,snd:'rifle',v:.9},
-ak:{n:'AK-47',t:'Atira mais devagar, dano alto e bastante recuo.',d:50,r:.17,mag:30,res:120,sp:.012,rl:1.6,pel:1,snd:'heavy',v:.8},
-ump:{n:'UMP',t:'Dano menor, mas atira muito rápido. Carregador 25.',d:22,r:.075,mag:25,res:150,sp:.011,rl:1.2,pel:1,snd:'rifle',v:.6},
-mp5:{n:'MP5',t:'Submetralhadora precisa, cadência altíssima, dano baixo.',d:18,r:.06,mag:30,res:180,sp:.008,rl:1.1,pel:1,snd:'rifle',v:.55},
-pist:{n:'PISTOLA',t:'Dano médio, tiro lento e muito precisa. Recarga rápida.',d:30,r:.22,mag:15,res:105,sp:.003,rl:.9,pel:1,snd:'enemy',v:.7},
-shot:{n:'ESCOPETA',t:'8 projéteis: devastadora de perto, fraca de longe. 6 tiros, recarga lenta.',d:15,r:.8,mag:6,res:36,sp:.07,rl:2.2,pel:8,snd:'heavy',v:1}};
-WP.rev={n:'REVÓLVER',t:'Dano alto, tiro lento, 6 balas. Precisa.',d:75,r:.55,mag:6,res:36,sp:.002,rl:1.8,pel:1,snd:'heavy',v:.9};
-WP.snip={n:'SNIPER',t:'Um tiro devastador, muito lenta. Botão direito dá zoom.',d:130,r:1.1,mag:5,res:30,sp:.0008,rl:2.2,pel:1,snd:'heavy',v:1};
+const WP={m4:{n:'M4',t:'Equilibrada: dano e cadência normais.',d:34,r:.11,mag:30,res:120,sp:.006,rl:1.4,pel:1,snd:'weapon_m4',v:.9},
+ak:{n:'AK-47',t:'Atira mais devagar, dano alto e bastante recuo.',d:50,r:.17,mag:30,res:120,sp:.012,rl:1.6,pel:1,snd:'weapon_ak47',v:.8},
+ump:{n:'UMP',t:'Dano menor, mas atira muito rápido. Carregador 25.',d:22,r:.075,mag:25,res:150,sp:.011,rl:1.2,pel:1,snd:'weapon_ump',v:.6},
+mp5:{n:'MP5',t:'Submetralhadora precisa, cadência altíssima, dano baixo.',d:18,r:.06,mag:30,res:180,sp:.008,rl:1.1,pel:1,snd:'weapon_mp5',v:.55},
+pist:{n:'PISTOLA',t:'Dano médio, tiro lento e muito precisa. Recarga rápida.',d:30,r:.22,mag:15,res:105,sp:.003,rl:.9,pel:1,snd:'weapon_pistol',v:.7},
+shot:{n:'ESCOPETA',t:'8 projéteis: devastadora de perto, fraca de longe. 6 tiros, recarga lenta.',d:15,r:.8,mag:6,res:36,sp:.07,rl:2.2,pel:8,snd:'weapon_shotgun',v:1}};
+WP.rev={n:'REVÓLVER',t:'Dano alto, tiro lento, 6 balas. Precisa.',d:75,r:.55,mag:6,res:36,sp:.002,rl:1.8,pel:1,snd:'weapon_revolver',v:.9};
+WP.snip={n:'SNIPER',t:'Um tiro devastador, muito lenta. Botão direito dá zoom.',d:130,r:1.1,mag:5,res:30,sp:.0008,rl:2.2,pel:1,snd:'weapon_sniper',v:1};
 const COL={m4:0x5577ff,ak:0xff9933,ump:0x33ddaa,mp5:0x33aaff,pist:0xdddddd,shot:0xff4444,rev:0xffcc33,snip:0xaa66ff},GS={pist:[.75,.75,.55],rev:[.8,.8,.6],shot:[1,1,1.15],snip:[1,1,1.5],ump:[1,1,.8],mp5:[1,1,.75]};
 Object.keys(WP).forEach(k=>{WP[k].c=COL[k];WP[k].zf=k==='snip'?.35:.85});
 const PIXQ=[2.4,1.7,1.1];
@@ -133,7 +133,7 @@ init(){
  let g=0;this.b.groan=mk(1.1,t=>{const f=62+22*Math.sin(6.283*5*t)+25*t,s=((f*t)%1)*2-1;g+=(s-g)*.12;return g*Math.sin(Math.PI*Math.min(1,t/1.1))*1.6});
  let e=0;this.b.boom=mk(1.8,t=>{const n=R()*2-1;e+=(n-e)*.06;return Math.tanh((e*3+Math.sin(6.283*40*t))*Math.exp(-t*2.5))});
  // --- ARQUIVOS DE AUDIO (pasta sfx/): se existir sfx/NOME.wav ou .mp3, substitui o som sintetizado ---
- ['rifle','enemy','heavy','reload','click','hit','groan','boom','step'].forEach(n=>{
+ ['rifle','enemy','heavy','reload','click','hit','groan','boom','step','weapon_m4','weapon_ak47','weapon_ump','weapon_mp5','weapon_pistol','weapon_shotgun','weapon_revolver','weapon_sniper','enemy_rifle','impact_flesh','player_hurt','carry_grunt','zombie_groan','zombie_attack','zombie_death'].forEach(n=>{
   const X={groan:['zumbi.mp3'],click:['gatilhovaziopente-1.mp3'],enemy:['enemy.wav'],boom:['boom-1.mp3']},ss=[...(X[n]||[]),n+'.mp3',n+'.wav','sfx/'+n+'.wav','sfx/'+n+'.mp3'];
   ss.reduce((q,u)=>q.catch(()=>fetch(u).then(r=>{if(!r.ok)throw 0;return r.arrayBuffer()}).then(a=>c.decodeAudioData(a))),Promise.reject())
    .then(b=>{{const d0=b.getChannelData(0);let f=0;while(f<d0.length&&Math.abs(d0[f])<.02)f++;this.ld[n]=Math.max(0,f/b.sampleRate-.005)}let m=0;for(let k=0;k<b.numberOfChannels;k++){const d=b.getChannelData(k);for(let i=0;i<d.length;i++){const x=Math.abs(d[i]);if(x>m)m=x}}
@@ -156,7 +156,7 @@ X:{gomes_01:['CB-gomes-1.mp3'],gomes_02:['CB-gomes-2.mp3'],gomes_03:['CB-gomes-6
 src(id,p,i){return[...(this.X[id]||[]),...(p==='onda'?[]:[p[0].toUpperCase()+p.slice(1)+'-fala'+i+'-1.mp3',id+'.mp3','voz/'+id+'.mp3','voz/'+id+'.wav'])]},
 A:{},cur:null,
 fid(t,w){const mw=/^Onda (\d+)! Preparem-se!$/.exec(t);if(mw)return'onda_'+Math.min(6,+mw[1]);const l=this.L[w];if(!l)return null;const i=l.indexOf(t,1);return i>0?l[0]+'_'+String(i).padStart(2,'0'):null},
-mk(id,ss){const a=new Audio();let k=0;a.preload='auto';a.addEventListener('ended',()=>VOZ.radio());['ended','pause'].forEach(v=>a.addEventListener(v,()=>MUS.duck(0)));a.addEventListener('play',()=>MUS.duck(1));a.src=ss[0];a.onerror=()=>{if(++k<ss.length)a.src=ss[k];else a.bad=1};this.A[id]=a},
+mk(id,ss){const a=new Audio();let k=0;a.preload='none';a.addEventListener('ended',()=>VOZ.radio());['ended','pause'].forEach(v=>a.addEventListener(v,()=>MUS.duck(0)));a.addEventListener('play',()=>MUS.duck(1));a.src=ss[0];a.onerror=()=>{if(++k<ss.length)a.src=ss[k];else a.bad=1};this.A[id]=a},
 radio(){const r=this.rad;if(!r||r.bad||!SET.radio)return;r.currentTime=0;r.volume=Math.min(1,SET.vvol)*.55;r.play().catch(()=>{})},
 pre(){if(this.pd)return;this.pd=1;{const r=this.rad=new Audio(),q=['EstaticaRadio_tocardepoisdasfalas-1.mp3','voz/EstaticaRadio_tocardepoisdasfalas-1.mp3'];let k=0;r.preload='auto';r.src=q[0];r.onerror=()=>{if(++k<q.length)r.src=q[k];else r.bad=1}}Object.values(this.L).forEach(l=>{for(let i=1;i<l.length;i++){const id=l[0]+'_'+String(i).padStart(2,'0');this.mk(id,this.src(id,l[0],i))}});for(let n=1;n<=6;n++){const id='onda_'+n;this.mk(id,this.src(id,'onda',n))}},
 say(txt,who='SGT. SILVA',prio){
@@ -501,20 +501,20 @@ function shoot(p){if(M.noFire)return;
   ray.set(o,d);ray.far=140;const hit=ray.intersectObjects(list,true)[0];
   tracer(mz,hit?hit.point:o.clone().add(d.clone().multiplyScalar(140)),0xffe9a0);
   if(hit){const ent=hit.object.userData.ent,hd=hit.object.userData.head?2.5:1,dm=w.d*(w.pel>1?Math.max(.2,1-hit.distance/30):1);spark(hit.point);
-   if(ent){if(ent.isPlayer){if(!ent.dead){ent.hp-=dm*.8*hd;ent.dmgT=.35;p.hitT=.15;SFX.play('hit',.8);if(ent.hp<=0)die(ent,p)}}
+   if(ent){if(ent.isPlayer){if(!ent.dead){ent.hp-=dm*.8*hd;ent.dmgT=.35;p.hitT=.15;SFX.play('player_hurt',.8);if(ent.hp<=0)die(ent,p)}}
     else if(ent.isGen){ent.hp-=dm;p.hitT=.15;SFX.play('hit',.5);if(ent.hp<=0&&gens.includes(ent))killGen(ent)}
     else{p.hitT=.15;dmgEnemy(ent,dm*hd,p)}}}}
  enemies.forEach(e=>{if(!e.alert&&dd(e.pos,p.pos)<45)e.alert=true})}
 function killGen(g){scene.remove(g.o.mesh);obst.splice(obst.indexOf(g.o),1);gens.splice(gens.indexOf(g),1);OM=obst.map(o=>o.mesh);SFX.play('boom',1,1,g.o.mesh.position);
  for(let i=0;i<8;i++)spark(g.o.mesh.position.clone().add(new THREE.Vector3((R()-.5)*3,R()*3,(R()-.5)*3)),0xff8800);VOZ.say('Gerador destruído!','CB GOMES')}
 function dmgEnemy(e,dmg,by){
- if(e.dead)return;e.hp-=dmg;e.alert=true;SFX.play('hit',.5,1,e.pos);
+ if(e.dead)return;e.hp-=dmg;e.alert=true;SFX.play('impact_flesh',.5,1,e.pos);
  enemies.forEach(o=>{if(!o.alert&&dd(o.pos,e.pos)<25)o.alert=true});
  if(e.hp<=0&&M.storyAct===1&&e.type==='boss'){e.hp=1;e.downed=true;e.alert=false;e.g.rotation.x=Math.PI/2;VOZ.say('O alvo caiu! Aproximem-se e rendam o chefe.','CB GOMES',1);return}
- if(e.hp<=0){e.dead=true;scene.remove(e.g);enemies.splice(enemies.indexOf(e),1);SFX.play(e.type==='zom'?'groan':'hit',.8,.7,e.pos);
+ if(e.hp<=0){e.dead=true;scene.remove(e.g);enemies.splice(enemies.indexOf(e),1);SFX.play(e.type==='zom'?'zombie_death':'impact_flesh',.8,.7,e.pos);
   if(by&&by.isPlayer)by.kills++;else if(by&&R()<.3)VOZ.say(pick(['Alvo neutralizado!','Mais um no chão!','Inimigo abatido, avançando!']),by.name)}}
 function hurt(t,dmg,from){
- if(t.isPlayer){if(t.dead)return;t.hp-=dmg;t.dmgT=.35;SFX.play('hit',.9);if(t.hp<=0)die(t,from)}
+ if(t.isPlayer){if(t.dead)return;t.hp-=dmg;t.dmgT=.35;SFX.play('player_hurt',.9);if(t.hp<=0)die(t,from)}
  else{t.hp-=dmg;if(t.hp<=0){scene.remove(t.g);allies.splice(allies.indexOf(t),1);VOZ.say('Homem ao chão! Estou sem apoio!','SD. REIS',1)}}}
 function die(p,by){
  p.dead=true;p.rsp=2;
@@ -540,10 +540,10 @@ function updEnemy(e,dt){if(e.downed)return;
  if(!e.alert){const detect=M.storyAct===3?(M.storyDisguise?9:2.8):38;if(e.see&&bd<detect)e.alert=true;return}
  if(TW&&lv(tg.pos.y)!==lv(e.pos.y)){legs(e,0,dt);return}
  const dx=tg.pos.x-e.pos.x,dz=tg.pos.z-e.pos.z;e.g.rotation.y=Math.atan2(dx,dz);e.cd-=dt;let m=0;
- if(e.type==='zom'){m=dir(e,dx,dz,e.sp,dt);if(bd<1.9&&e.cd<=0){e.cd=1;hurt(tg,e.dmg,null);SFX.play('hit',.7)}if(R()<dt*.15)SFX.play('groan',.5,.8+R()*.3,e.pos)}
+ if(e.type==='zom'){m=dir(e,dx,dz,e.sp,dt);if(bd<1.9&&e.cd<=0){e.cd=1;hurt(tg,e.dmg,null);SFX.play('zombie_attack',.8)}if(R()<dt*.15)SFX.play('zombie_groan',.5,.8+R()*.3,e.pos)}
  else{e.sgT-=dt;if(e.sgT<=0){e.sgT=1.5+R()*2;e.sg=R()<.5?1:-1}
   if(!e.see||bd>24)m=dir(e,dx,dz,e.sp,dt);else if(bd<10)m=dir(e,-dx,-dz,e.sp*.8,dt);else m=dir(e,-dz*e.sg,dx*e.sg,e.sp*.6,dt);
-  if(e.see&&bd<55&&e.cd<=0){e.cd=e.rate+R()*.4;SFX.play(e.type==='boss'?'heavy':'enemy',.8,1,e.pos);
+  if(e.see&&bd<55&&e.cd<=0){e.cd=e.rate+R()*.4;SFX.play(e.type==='boss'?'heavy':'enemy_rifle',.8,1,e.pos);
    const a=new THREE.Vector3(e.pos.x,1.5+e.pos.y,e.pos.z),b=new THREE.Vector3(tg.pos.x+(R()-.5)*2,1.4+(TW?lv(tg.pos.y):0),tg.pos.z+(R()-.5)*2);tracer(a.add(new THREE.Vector3(dx,0,dz).normalize()),b,0xff4444);
    if(R()<Math.max(.12,.55-bd/110))hurt(tg,e.dmg,null)}}
  legs(e,m,dt)}
@@ -603,13 +603,13 @@ function storyClearItems(){(M.storyItems||[]).forEach(o=>scene.remove(o.g));M.st
 function storyDocs(){storyClearItems();M.storyItems.push(storyMarker(0,-30,'EQUIPE LOCAL',0x22d3ee));[[-4,-33],[4,-33],[0,-35]].forEach(p=>{const g=humanoid('#3a5a2a','#c99a6a',true);g.position.set(p[0],0,p[1]);scene.add(g)})}
 function storyBanner(t){$('mt').textContent=t;$('mp').textContent=(M.storyAct>3?'EPÍLOGO':'ATO '+M.storyAct+' / 3')+'  ·  '+(M.storyAct===1?'CIDADE DO MÉXICO':M.storyAct===2?'INTERROGATÓRIO':M.storyAct===4?'CEMITÉRIO':'COMPLEXO NUCLEAR')}
 function beginStoryChapter(n){if(n===4)return cemSetup();M.noFire=0;M.carry=0;M.storyAct=n;M.storyStep=0;M.storyDisguise=0;M.storyKills=0;M.storyBoss=null;storyClearItems();if(M.storyTarget){scene.remove(M.storyTarget.g);M.storyTarget=null}
- if(n===1){storyHelicopter();storyBanner('ATO I — INSERÇÃO: reúna-se com os soldados e limpe a praça');for(let i=0;i<4;i++){const q=spot((R()-.5)*60,-30+(R()-.5)*30,12);spawnEnemy(q[0],q[1],'sol')}storySay('SGT. SILVA','Rotor desacelerando. Descemos no centro da cidade; encontrem a equipe local.');}
+ if(n===1){storyHelicopter();storyBanner('ATO I — INSERÇÃO: reúna-se com os soldados e limpe a praça');for(let i=0;i<4;i++){const q=spot((R()-.5)*60,-30+(R()-.5)*30,12);spawnEnemy(q[0],q[1],'sol')}storySay('SGT. SILVA','Rotor desacelerando. Descemos no centro da cidade; encontrem a equipe local.',.9,'story_rotor.mp3');}
  if(n===2){loadMap('lab');M.storyAct=2;M.storyStep=0;storyBanner('ATO II — INTERROGATÓRIO: elimine a escolta e recupere as coordenadas');for(let i=0;i<5;i++){const q=spot((R()-.5)*48,-20+(R()-.5)*30,10);spawnEnemy(q[0],q[1],'sol')}showStoryCutscene({set:'room',title:'ATO II · INTERROGATÓRIO',text:'CHEFE: A instalação fica sob o complexo industrial, na passagem ao norte. A senha do reator é SIERRA-09. SILVA: Você vai cooperar. A equipe já está no local; mantenham o rádio em silêncio.',who:'CHEFE DO CARTEL · SGT. SILVA',audio:'cena_interrogatorio.mp3',voice:'SGT. SILVA'})}
- if(n===3){loadMap('lab');M.storyAct=3;M.storyStep=3;M.storyDisguise=0;M.storyTarget=null;storySetTarget(0,8,'SENHA · TERMINAL DA BOMBA',0xff4444);storyBanner('ATO III — BOMBA: use a senha SIERRA-09 e pressione F');storySay('SGT. SILVA','Bomba localizada no núcleo do laboratório. Cheguem ao terminal e insiram a senha SIERRA-09.')}
+ if(n===3){loadMap('lab');M.storyAct=3;M.storyStep=3;M.storyDisguise=0;M.storyTarget=null;storySetTarget(0,8,'SENHA · TERMINAL DA BOMBA',0xff4444);storyBanner('ATO III — BOMBA: use a senha SIERRA-09 e pressione F');storySay('SGT. SILVA','Bomba localizada no núcleo do laboratório. Cheguem ao terminal e insiram a senha SIERRA-09.',.9,'story_bomba.mp3')}
 }
 function storyHelicopter(){const g=new THREE.Group(),dark=new THREE.MeshLambertMaterial({color:0x26322d}),glass=new THREE.MeshLambertMaterial({color:0x47707a,transparent:true,opacity:.75});const box=(w,h,d,x,y,z,m)=>{const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);o.position.set(x,y,z);g.add(o);return o};box(3,1.1,5,0,0,0,dark);box(2.4,.8,1.5,0,.05,-2.2,glass);box(.12,.12,10,0,.75,0,dark);const tail=box(.28,.35,3,0,.25,3.3,dark);tail.rotation.x=.1;box(.12,.8,.12,0,.2,4.6,dark);const rotor=box(9,.08,.22,0,.75,0,dark);g.position.set(-7,13,M.B-17);scene.add(g);M.storyHeli={g,rotor,tail};}
 function storyTick(){const d=M.storyAct;if(!d)return;if(M.pick>0)M.pick-=M.dt;if(M.pickSt&&M.pick<=.7){M.pickSt=0;addCarry()}if(M.storyHeli){M.storyHeli.g.position.y=Math.max(3,M.storyHeli.g.position.y-M.dt*1.6);M.storyHeli.rotor.rotation.y+=M.dt*18;}
- if(d===1){if(M.storyStep===0){$('mp').textContent='Hostis na zona: '+enemies.length+'  |  Reúna-se com a equipe local';if(!enemies.length){M.storyStep=1;storyDocs();storyBanner('ATO I — REÚNA-SE com a equipe local (marcador ciano)');storySay('CB. GOMES','Praça segura. A equipe local nos espera adiante.');}}
+ if(d===1){if(M.storyStep===0){$('mp').textContent='Hostis na zona: '+enemies.length+'  |  Reúna-se com a equipe local';if(!enemies.length){M.storyStep=1;storyDocs();storyBanner('ATO I — REÚNA-SE com a equipe local (marcador ciano)');storySay('CB. GOMES','Praça segura. A equipe local nos espera adiante.',.9,'story_praca.mp3');}}
  else if(M.storyStep===1){const o=M.storyItems[0];$('mp').textContent='Reúna-se com a equipe local (marcador ciano)';if(o&&players.some(p=>!p.dead&&dd(p.pos,o)<5)){M.storyStep=2;storyClearItems();showStoryCutscene({set:'city',title:'PLANO DE ASSALTO',text:'RAMOS: Capitão, o chefe está no topo da Torre Estrela, com seguranças em todos os andares. SILVA: Helicóptero pronto. Saltamos na cobertura e varremos de cima a baixo. GOMES: Capturamos o chefe vivo e saímos pelo estacionamento.',who:'TEN. RAMOS · SGT. SILVA · CB. GOMES',audio:'cena_plano.mp3',voice:'SGT. SILVA'},()=>{showStoryCutscene({set:'heli',title:'SALTO · TORRE ESTRELA',text:'SILVA: Sobrevoando a Torre Estrela! Saltem agora! ALVES: Entrem pelo teto, varram o prédio e capturem o chefe vivo!',who:'SGT. SILVA · CAP. ALVES',audio:'cena_salto.mp3',voice:'SGT. SILVA'},jumpIn)})}}
  else if(M.storyStep===3){carryTick()}else if(M.storyStep===2){if(M.map==='torre')torreTick();else $('mp').textContent=M.storyBoss&&M.storyBoss.downed?'Chefe ferido: aproxime-se e pressione F para capturar':'Chefe do cartel: '+Math.ceil(M.storyBoss?.hp||0)+' / 520';if(M.storyBoss?.downed)storyBanner('ATO I — PRESSIONE F perto do chefe para capturá-lo vivo');}}
  else if(d===2){if(M.storyStep===0){$('mp').textContent='Escolta restante: '+enemies.length+'  |  evidências do chefe: '+(M.storyIntel?'recuperadas':'pendentes');if(!enemies.length){M.storyStep=1;storySetTarget(-32,0,'PASTA CRIPTOGRAFADA',0x22d3ee);storyBanner('ATO II — RECUPERE a pasta de documentos marcada');}}
@@ -620,10 +620,10 @@ function storyTick(){const d=M.storyAct;if(!d)return;if(M.pick>0)M.pick-=M.dt;if
 }
 function storyInteract(p){if(!p||p.dead||!M.storyAct)return;const near=(x,z,r)=>Math.hypot(p.pos.x-x,p.pos.z-z)<r;
  if(M.storyAct===1&&M.storyStep===2&&M.storyBoss&&M.storyBoss.downed&&near(M.storyBoss.pos.x,M.storyBoss.pos.z,4)&&Math.abs(p.y-M.storyBoss.pos.y)<3){const b=M.storyBoss;b.dead=true;scene.remove(b.g);enemies=enemies.filter(e=>e!==b);M.storyStep=3;startCarry();return}
- if(M.storyAct===2&&M.storyStep===1&&M.storyTarget&&near(M.storyTarget.x,M.storyTarget.z,4)){M.storyIntel=1;scene.remove(M.storyTarget.g);M.storyTarget=null;M.storyStep=2;showStoryCutscene({set:'room',title:'COORDENADAS CONFIRMADAS',text:'A pasta confirma o acesso ao silo industrial. A senha SIERRA-09 está validada. A equipe se desloca para o corredor leste.',who:'SD. REIS · RÁDIO',audio:'',voice:'SD. REIS'},()=>beginStoryChapter(3));return}
+ if(M.storyAct===2&&M.storyStep===1&&M.storyTarget&&near(M.storyTarget.x,M.storyTarget.z,4)){M.storyIntel=1;scene.remove(M.storyTarget.g);M.storyTarget=null;M.storyStep=2;showStoryCutscene({set:'room',title:'COORDENADAS CONFIRMADAS',text:'A pasta confirma o acesso ao silo industrial. A senha SIERRA-09 está validada. A equipe se desloca para o corredor leste.',who:'SD. REIS · RÁDIO',audio:'cena_coordenadas.mp3',voice:'SD. REIS'},()=>beginStoryChapter(3));return}
  if(M.storyAct===3&&M.storyStep===3&&M.storyTarget&&near(M.storyTarget.x,M.storyTarget.z,4)){scene.remove(M.storyTarget.g);M.storyTarget=null;M.storyStep=4;showStoryCutscene({set:'lab',title:'SILO · DESARME',text:'SILVA: SIERRA-09... código aceito. Bomba desativada. Gomes, responda! GOMES: Sargento, responda! Silva caiu. Reis, assuma o comando; a missão ainda não terminou.',who:'SGT. SILVA · CB. GOMES',audio:'cena_reator.mp3',voice:'SGT. SILVA'},()=>storyHandoff());return}
  if(M.storyAct===4&&near(0,0,7)){M.resp=(M.resp||0)+1;SFX.play('click',.7);$('sub').textContent='[EQUIPE] F — descanse em paz, Sargento Silva.';$('sub').style.display='block';if(M.resp>=8)end('OPERAÇÃO CÓDIGO 0 — FIM DOS TEMPOS','A bomba foi desarmada, a guerra foi evitada e o Sargento Silva descansa em paz.')}}
-function storyHandoff(){if(M.storyAct!==3)return;const fallen=players[0],partner=players.find(p=>p.id===2&&!p.dead);if(partner){if(fallen){fallen.body.visible=false;if(fallen.h&&fallen.h.el)fallen.h.el.style.display='none'}partner.h.el.style.left='0';partner.h.el.style.width='100%';players=[partner];M.split=false;$('sl').style.display='none';partner.kb=true;partner.dead=false;partner.hp=100;partner.pos.set(2,1.9,-8);partner.yaw=0;partner.body.position.set(2,0,-8);partner.body.visible=true;}else if(fallen){fallen.body.visible=false;fallen.dead=false;fallen.hp=100;fallen.cam.position.set(2,1.9,-8);fallen.pos.set(2,1.9,-8);fallen.body.position.set(2,0,-8);fallen.body.visible=true;fallen.yaw=0;fallen.pitch=0;fallen.kb=true;}M.storyAct=3;M.storyStep=4;storySetTarget(0,M.B-10,'HELICÓPTERO',0xffff00);for(let i=0;i<4;i++){const q=spot((R()-.5)*50,-10+(R()-.5)*20,10),e=spawnEnemy(q[0],q[1],'sol');e.alert=true}storyBanner('FUGA — leve a equipe até o helicóptero (zona amarela)');storySay('SD. REIS','O sargento caiu. Assumo o comando. Todos para o helicóptero!');}
+function storyHandoff(){if(M.storyAct!==3)return;const fallen=players[0],partner=players.find(p=>p.id===2&&!p.dead);if(partner){if(fallen){fallen.body.visible=false;if(fallen.h&&fallen.h.el)fallen.h.el.style.display='none'}partner.h.el.style.left='0';partner.h.el.style.width='100%';players=[partner];M.split=false;$('sl').style.display='none';partner.kb=true;partner.dead=false;partner.hp=100;partner.pos.set(2,1.9,-8);partner.yaw=0;partner.body.position.set(2,0,-8);partner.body.visible=true;}else if(fallen){fallen.body.visible=false;fallen.dead=false;fallen.hp=100;fallen.cam.position.set(2,1.9,-8);fallen.pos.set(2,1.9,-8);fallen.body.position.set(2,0,-8);fallen.body.visible=true;fallen.yaw=0;fallen.pitch=0;fallen.kb=true;}M.storyAct=3;M.storyStep=4;storySetTarget(0,M.B-10,'HELICÓPTERO',0xffff00);for(let i=0;i<4;i++){const q=spot((R()-.5)*50,-10+(R()-.5)*20,10),e=spawnEnemy(q[0],q[1],'sol');e.alert=true}storyBanner('FUGA — leve a equipe até o helicóptero (zona amarela)');storySay('SD. REIS','O sargento caiu. Assumo o comando. Todos para o helicóptero!',.9,'story_handoff.mp3');}
 
 
 // ================= CORREÇÕES + ABERTURA (vídeo + mapa do México) =================
@@ -684,10 +684,10 @@ function jumpIn(){loadMap('torre');M.storyHeli=null;M.storyTarget=null;M.tw=0;
  const E=(y,cx,cz,sp,n)=>{for(let i=0;i<n;i++)tSpawn(y,cx,cz,sp,'sol',0)};
  E(18,10,0,36,2);E(12,-18,0,16,2);E(12,18,0,22,2);E(6,6,0,14,2);E(6,22,-6,10,1);E(6,37,-8,3,1);E(6,37,8,3,1);
  const b=tSpawn(6,38,0,2,'boss',0);b.hp=b.max=520;M.storyBoss=b;
- storyBanner('ATO I — TORRE ESTRELA: entre pela porta do topo, atravesse o prédio e derrube o chefe');storySay('SGT. SILVA','Saltaram! Entrem pela porta do topo e atravessem o prédio até o chefe. Derrubem-no sem matá-lo.')}
-function startCarry(){M.carry=1;M.pick=1.4;M.pickSt=1;players.forEach(p=>{p.slots.forEach(s=>s.k='rev');p.wp=WP.rev;p.ammo=WP.rev.mag;p.res=Math.max(p.res,48);p.rel=0;p.gun.scale.set(...GS.rev)});
- if(M.map==='torre'){[[4,0],[10,-6],[-4,8],[-14,-6],[-22,6],[-28,-4]].forEach(q=>tSpawn(0,q[0],q[1],6,'sol',1));storySetTarget(-50,0,'SAÍDA · CARRO DE FUGA',0xffff00);storyBanner('Leve o chefe até a saída do térreo (porta verde, oeste): só revólver, andando devagar');storySay('CB. GOMES','Chefe rendido! Desçam pela escada leste até o térreo e saiam pela porta verde. Os reforços estão chegando!')}
- else{for(let i=0;i<6;i++){const q=spot((R()-.5)*20,-62,10),e=spawnEnemy(q[0],q[1],'sol');e.alert=true}storySetTarget(0,-56,'CARRO DE FUGA',0xffff00);storyBanner('Leve o chefe até o carro: só o revólver e andando devagar');storySay('CB. GOMES','Nós limpamos a área! Você carrega o chefe, só dá para usar o revólver!')}}
+ storyBanner('ATO I — TORRE ESTRELA: entre pela porta do topo, atravesse o prédio e derrube o chefe');storySay('SGT. SILVA','Saltaram! Entrem pela porta do topo e atravessem o prédio até o chefe. Derrubem-no sem matá-lo.',.9,'story_tower.mp3')}
+function startCarry(){M.carry=1;SFX.play('carry_grunt',.95);M.pick=1.4;M.pickSt=1;players.forEach(p=>{p.slots.forEach(s=>s.k='rev');p.wp=WP.rev;p.ammo=WP.rev.mag;p.res=Math.max(p.res,48);p.rel=0;p.gun.scale.set(...GS.rev)});
+ if(M.map==='torre'){[[4,0],[10,-6],[-4,8],[-14,-6],[-22,6],[-28,-4]].forEach(q=>tSpawn(0,q[0],q[1],6,'sol',1));storySetTarget(-50,0,'SAÍDA · CARRO DE FUGA',0xffff00);storyBanner('Leve o chefe até a saída do térreo (porta verde, oeste): só revólver, andando devagar');storySay('CB. GOMES','Chefe rendido! Desçam pela escada leste até o térreo e saiam pela porta verde. Os reforços estão chegando!',.9,'story_carry_torre.mp3')}
+ else{for(let i=0;i<6;i++){const q=spot((R()-.5)*20,-62,10),e=spawnEnemy(q[0],q[1],'sol');e.alert=true}storySetTarget(0,-56,'CARRO DE FUGA',0xffff00);storyBanner('Leve o chefe até o carro: só o revólver e andando devagar');storySay('CB. GOMES','Nós limpamos a área! Você carrega o chefe, só dá para usar o revólver!',.9,'story_carry_car.mp3')}}
 function addCarry(){M.carryG=[];players.forEach(p=>{const g=new THREE.Group(),c=new THREE.MeshLambertMaterial({color:0x3a1212}),k=new THREE.MeshLambertMaterial({color:0x111111}),s=(a,b,d,x,y,z,m)=>{const o=new THREE.Mesh(new THREE.BoxGeometry(a,b,d),m);o.position.set(x,y,z);g.add(o)};
  s(.17,.75,.19,0,0,0,c);s(.17,.75,.19,.22,.05,0,c);s(.2,.14,.3,0,-.42,-.05,k);s(.2,.14,.3,.22,-.37,-.05,k);g.position.set(-.55,-.55,-.9);g.rotation.set(.25,.2,.35);p.cam.add(g);M.carryG.push(g)})}
 function endCarry(){M.carry=0;(M.carryG||[]).forEach((g,i)=>{if(g.parent)g.parent.remove(g)});M.carryG=[];players.forEach(p=>{p.slots[0].k=SEL.w[p.id-1];p.slots[1].k=SEL.s[p.id-1];p.wp=WP[p.slots[p.cur].k];p.ammo=p.wp.mag;p.gun.scale.set(...(GS[p.slots[p.cur].k]||[1,1,1]))})}
