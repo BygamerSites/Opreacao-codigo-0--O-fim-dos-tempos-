@@ -1,4 +1,4 @@
-# Operação Código 0 — Fim dos Tempos
+# Operação 0 — Fim dos Tempos
 
 Continuação em HTML/Three.js do shooter enviado. A campanha nova tem três atos ambientados no México e no complexo da bomba; os modos originais de coop local, versus e zumbis, além de armas, controles, HUD, texturas retrô e opções, continuam disponíveis.
 
@@ -20,7 +20,7 @@ Abra `index.html` em um navegador moderno. O Three.js r128 está incluído local
 
 ## Falas e direção de voz
 
-As falas principais são gravações compactas em MP3, armazenadas em `voz/` e carregadas sob demanda durante o briefing e as cutscenes; isso evita baixar os áudios no carregamento inicial do jogo. Se um clipe não puder tocar, a síntese de voz em português brasileiro do navegador é usada como fallback. As legendas permanecem disponíveis.
+As falas principais são gravações compactas em MP3, armazenadas em `voz/` e carregadas sob demanda durante o briefing e as cutscenes. A configuração de áudio separa volume geral, efeitos, armas, música e voz/rádio, com salvamento automático no navegador. Se um clipe não puder tocar, a síntese de voz em português brasileiro do navegador é usada como fallback. As legendas permanecem disponíveis.
 
 | Personagem | Direção de voz |
 |---|---|
@@ -40,7 +40,7 @@ As falas seguintes cobrem a inserção, a captura, as coordenadas, o disfarce, o
 
 ## Efeitos sonoros
 
-Os efeitos também ficam no repositório, em `sfx/`, e são carregados junto do jogo: cada uma das oito armas (M4, AK-47, UMP, MP5, pistola, escopeta, revólver e sniper) tem um disparo próprio. Há ainda sons de fuzil inimigo, impacto em inimigos, dano recebido pelo jogador, esforço ao erguer o sargento e vocalizações de zumbi para gemido, ataque e derrota.
+Os efeitos ficam no repositório, em `sfx/`: cada uma das oito armas (M4, AK-47, UMP, MP5, pistola, escopeta, revólver e sniper) tem um disparo próprio, agora com volume reforçado e ajuste independente. Há também fuzil inimigo, recarga, passos, munição, confirmação de objetivos, porta metálica, rotor de helicóptero nas extrações (não na abertura da missão), embarque e partida do carro, impactos, dano recebido, esforço ao erguer o sargento e vocalizações de zumbi.
 
 ## Publicação
 
