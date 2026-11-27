@@ -120,11 +120,11 @@ function openOpts(){const RG=(l,k,a,b,st)=>`<label>${l}: <b id="v_${k}">${SET[k]
  CK=(l,k,n)=>`<label><input type="checkbox" ${SET[k]?'checked':''} onchange="SET['${k}']=this.checked?1:0;sv()"> ${l}${n?' <small style="color:#888">'+n+'</small>':''}</label>`;
  $('ob').innerHTML=RG('Sensibilidade do mouse','sens',.2,3,.05)+RG('Sensibilidade do controle','pads',.2,3,.05)+CK('Inverter eixo Y (olhar)','inv')+RG('Volume dos efeitos','vol',0,1,.05)+CK('Música','music')+RG('Volume da música','mvol',0,1,.05)+CK('Estática de rádio depois das falas','radio')+CK('Voz de IA','voice','(só para falas sem arquivo na pasta voz/; as falas com arquivo tocam sempre; as legendas continuam)')+RG('Volume da voz','vvol',0,1,.05)+RG('Campo de visão (FOV)','fov',60,110,1)
  +`<label>Qualidade gráfica: <select onchange="SET.q=+this.value;sv()">${['Retrô pixelado','Média (suave)','Alta (nítida)'].map((n,i)=>`<option value="${i}" ${SET.q===i?'selected':''}>${n}</option>`).join('')}</select></label>`+CK('Sombras','sh','(vale ao iniciar/reiniciar a partida)')+'<div class="bg" style="margin:14px auto"><button onclick="openAudioSettings()">🔊 Configuração de áudio</button></div>';$('opts').style.display='flex'}
-function pause(on){if(M.over||!players.length||M.cut)return;M.paused=on;$('pause').style.display=on?'flex':'none';if(on){if(M.heliAmbience)SFX.stopLoop('helicopter_rotor_loop',.25);document.exitPointerLock();mouseDown=mouseR=false}else{mdx=mdy=0;$('opts').style.display='none';if(M.heliAmbience)SFX.loop('helicopter_rotor_loop',.48);if(players[0].kb)renderer.domElement.requestPointerLock()}}
+function pause(on){if(M.over||!players.length||M.cut)return;M.paused=on;$('pause').style.display=on?'flex':'none';if(on){if(M.heliAmbience)SFX.stopLoop('helicopter_rotor_loop',.25);if(M.airWind){SFX.stopLoop('air_wind',.2);M.airWind=0}document.exitPointerLock();mouseDown=mouseR=false}else{mdx=mdy=0;$('opts').style.display='none';if(M.heliAmbience)SFX.loop('helicopter_rotor_loop',.48);syncAirWind();if(players[0].kb)renderer.domElement.requestPointerLock()}}
 document.addEventListener('pointerlockchange',()=>{if(!document.pointerLockElement&&players.length&&!M.over&&!M.paused&&!M.cut&&!M.mapOpen)pause(true)});
 addEventListener('keydown',e=>{if(e.code==='KeyP'&&players.length)pause(!M.paused)});
-function restart(){const m=M.mode;stopSceneAudio();LID++;if(renderer){renderer.domElement.remove();renderer.dispose()}document.querySelectorAll('.ph').forEach(e=>e.remove());
- players=[];enemies=[];allies=[];obst=[];OM=[];fx=[];gens=[];fires=[];picks=[];wpns=[];EMB=null;Object.assign(M,{over:false,paused:false,mission:0,wave:0,t:0,brk:0,items:null,ext:null,zone:null,boss:null,heliAmbience:0,storyAct:0,storyStep:0,storyItems:[],storyDisguise:0});
+function restart(){const m=M.mode;stopSceneAudio();stopExtractionHelicopter();SFX.stopLoop('air_wind',.3);LID++;if(renderer){renderer.domElement.remove();renderer.dispose()}document.querySelectorAll('.ph').forEach(e=>e.remove());
+ players=[];enemies=[];allies=[];obst=[];OM=[];fx=[];gens=[];fires=[];picks=[];wpns=[];EMB=null;Object.assign(M,{over:false,paused:false,mission:0,wave:0,t:0,brk:0,items:null,ext:null,zone:null,boss:null,heliAmbience:0,airDrop:null,airWind:0,storyAct:0,storyStep:0,storyItems:[],storyDisguise:0});
  if(window.speechSynthesis)speechSynthesis.cancel();['end','pause','opts','sub'].forEach(i=>$(i).style.display='none');startGame(m)}
 const MAPS={base:'Base Militar (entardecer)',jungle:'Selva (entardecer)',desert:'Deserto (ruínas)',secret:'Base Secreta',mexico:'Cidade mexicana (urbana)'};
 let SEL={map:'base',w:['m4','ak'],s:['pist','pist'],mode:''};
@@ -134,13 +134,36 @@ function renderSetup(){const m=SEL.mode,sp=m==='coop'||m==='pvp'||m==='zcoop',st
  else h+='<h3>CAMPANHA NOVA: México → Infiltração → Última Vigília (3 atos)</h3>';
  for(let i=0;i<(sp?2:1);i++)[['w','PRIMÁRIA'],['s','SECUNDÁRIA']].forEach(a=>{h+=`<h3>ARMA ${a[1]} DO P${i+1}</h3><div class="opt">`+Object.keys(WP).map(k=>`<button class="${SEL[a[0]][i]===k?'on':''}" onclick="SEL.${a[0]}[${i}]='${k}';renderSetup()">${WP[k].n}</button>`).join('')+`</div><div class="wd">${WP[SEL[a[0]][i]].t}</div>`});
  h+='<div class="bg" style="margin:16px auto 0"><button onclick="startGame(SEL.mode)">▶ COMEÇAR</button><button onclick="location.reload()" style="background:#333;border-color:#777">Voltar</button></div>';
- if(m==='pvp')h+='<div class="bg" style="margin:8px auto"><button onclick="startGame(\'pvpbr\')">▶ JOGAR BR · F (Y NO CONTROLE)</button></div>';
+ if(m==='pvp')h+='<div class="bg" style="margin:8px auto"><button onclick="startGame(\'pvpbr\')">▶ BR NA ILHA · SALTO DE HELICÓPTERO</button></div>';
+ if(m==='zsolo'||m==='zcoop')h+='<div class="bg" style="margin:8px auto"><button onclick="startGame(SEL.mode===\'zcoop\'?\'zbrcoop\':\'zbr\')">▶ BR ZUMBI · QUEDA E SAQUE</button></div>';
  $('setup').style.display='block';$('setup').innerHTML=h}
 const M={mode:'',split:false,over:false,mapOpen:false,mission:0,wave:0,t:0,brk:0,storyRun:0,storyAct:0,storyStep:0,storyItems:[],storyDisguise:0};
+function isBRMode(mode){return mode==='pvpbr'||mode==='zbr'||mode==='zbrcoop'}
+function isZombieBR(mode){return mode==='zbr'||mode==='zbrcoop'}
 const keys={};let mdx=0,mdy=0,mouseDown=false,mouseR=false,WHL=0,EMB=null;
 const dd=(a,b)=>Math.hypot(a.x-b.x,a.z-b.z);
 function startExtractionHelicopter(){if(M.heliAmbience)return;M.heliAmbience=1;SFX.loop('helicopter_rotor_loop',.48)}
 function stopExtractionHelicopter(){M.heliAmbience=0;SFX.stopLoop('helicopter_rotor_loop',.55)}
+function makeParachute(){
+ const g=new THREE.Group(),dome=new THREE.Mesh(new THREE.SphereGeometry(2.5,16,8,0,Math.PI*2,0,Math.PI/2),new THREE.MeshLambertMaterial({color:0xd94635,side:THREE.DoubleSide}));
+ dome.scale.y=.62;dome.position.y=4;g.add(dome);
+ const cord=new THREE.LineBasicMaterial({color:0xe8e2cf});[-1,1].forEach(x=>[-1,1].forEach(z=>{const l=new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(x*1.65,4,z*.55),new THREE.Vector3(0,1.55,0)]),cord);g.add(l)}));g.visible=false;scene.add(g);return g}
+function startAirDrop(){
+ const g=new THREE.Group(),dark=new THREE.MeshLambertMaterial({color:0x343b40}),glass=new THREE.MeshLambertMaterial({color:0x83b9c4,transparent:true,opacity:.72});
+ const body=new THREE.Mesh(new THREE.BoxGeometry(5,2.2,3),dark);g.add(body);const nose=new THREE.Mesh(new THREE.SphereGeometry(1.35,10,8),glass);nose.scale.set(1.25,.72,1.1);nose.position.z=-1.8;g.add(nose);
+ const tail=new THREE.Mesh(new THREE.BoxGeometry(.65,.65,8),dark);tail.position.set(0,.25,5.2);g.add(tail);
+ const skidMat=new THREE.MeshLambertMaterial({color:0x22272a});[-1.7,1.7].forEach(x=>{const skid=new THREE.Mesh(new THREE.BoxGeometry(.16,.16,6.6),skidMat);skid.position.set(x,-1.55,0);g.add(skid)});
+ const rotor=new THREE.Group(),bladeMat=new THREE.MeshLambertMaterial({color:0x171a1b});[0,Math.PI/2].forEach(a=>{const b=new THREE.Mesh(new THREE.BoxGeometry(.28,.08,11),bladeMat);b.rotation.y=a;rotor.add(b)});rotor.position.y=1.45;g.add(rotor);
+ const tr=new THREE.Mesh(new THREE.BoxGeometry(4,.08,.22),bladeMat);tr.position.set(0,5.65,9);g.add(tr);scene.add(g);
+ M.airDrop={g,rotor,time:0,duration:14,x0:-72,z0:0,x1:72,z1:0};M.brDropDone=0;M.heliAmbience=1;SFX.loop('helicopter_rotor_loop',.52);
+ players.forEach((p,i)=>{p.airState='ride';p.y=37;p.vy=0;p.pos.set(-72+(i?2.1:-2.1),1.9,0);p.canopy.visible=false});
+ $('mt').textContent='INSERÇÃO · ESCOLHA ONDE SALTAR';$('mp').textContent='ESPAÇO / A: SALTAR · WASD / ANALÓGICO: GUIAR O PARAQUEDAS';$('sub').textContent='A bordo do helicóptero — escolha seu ponto de pouso';$('sub').style.display='block';setTimeout(()=>{if($('sub').textContent.startsWith('A bordo'))$('sub').style.display='none'},4500)
+}
+function syncAirWind(){const on=players.some(p=>p.airState==='fall'||p.airState==='glide');if(on&&!M.airWind){M.airWind=1;SFX.loop('air_wind',.23)}else if(!on&&M.airWind){M.airWind=0;SFX.stopLoop('air_wind',.45)}}
+function airDropTick(dt){const d=M.airDrop;if(d){d.time+=dt;const u=Math.min(1,d.time/d.duration),e=u*u*(3-2*u);d.g.position.set(d.x0+(d.x1-d.x0)*e,41+Math.sin(u*Math.PI)*2,d.z0+(d.z1-d.z0)*e);d.g.rotation.y=-Math.PI/2;d.rotor.rotation.y+=dt*42;
+  players.forEach((p,i)=>{if(p.airState==='ride'){p.pos.x=d.g.position.x+(i?2.1:-2.1);p.pos.z=d.g.position.z;p.y=d.g.position.y-4}});
+  if(players.length&&players.every(p=>p.airState!=='ride')){d.departure=(d.departure||0)+dt;if(d.departure>4){scene.remove(d.g);M.airDrop=null;stopExtractionHelicopter()}}}
+ if(isBRMode(M.mode)&&!M.brDropDone&&players.length&&players.every(p=>!p.airState)){M.brDropDone=1;$('mt').textContent=isZombieBR(M.mode)?'BR ZUMBI · SAQUEIE E SOBREVIVA':'BR NA ILHA · ÚLTIMO JOGADOR VIVO';$('mp').textContent='Explore a ilha: aproxime-se das caixas e pressione F / Y para pegar uma arma'}}
 
 // ================= ÁUDIO =================
 const SFX={ctx:null,b:{},ld:{},au:{},loops:{},active:new Set(),
@@ -154,7 +177,7 @@ init(){if(this.ctx){this.ctx.resume();this.applyVolumes();return}const c=this.ct
  this.b.rifle=gun(120,.7,1.1);this.b.enemy=gun(150,.6,.9);this.b.heavy=gun(75,.9,1.4);const clk=(t,t0)=>t>t0&&t<t0+.05?((R()*2-1)*.6+Math.sin(6.283*1700*t))*Math.exp(-(t-t0)*120):0;
  this.b.reload=mk(1,t=>clk(t,.05)+clk(t,.45)*1.2+clk(t,.8)*.8);this.b.click=mk(.1,t=>clk(t,0));let sl=0;this.b.step=mk(.18,t=>{const n=R()*2-1;sl+=(n-sl)*.22;return Math.tanh((sl*1.6+Math.sin(6.283*(85-120*t)*t)*.9)*Math.exp(-t*30))});
  this.b.uih=mk(.07,t=>Math.sin(6.283*1500*t)*Math.exp(-t*55)*.5);this.b.uic=mk(.16,t=>(Math.sign(Math.sin(6.283*660*t))*.2+Math.sin(6.283*(t<.06?880:1320)*t)*.35)*Math.exp(-t*20));this.b.hit=mk(.18,t=>Math.sin(6.283*95*t)*Math.exp(-t*22)+(R()*2-1)*Math.exp(-t*70)*.4);this.b.ammo_pickup=mk(.34,t=>Math.sin(6.283*(540+900*t)*t)*Math.exp(-t*7)*.38+(t>.12?Math.sin(6.283*(800+500*(t-.12))*(t-.12))*Math.exp(-(t-.12)*10)*.28:0));this.b.objective_complete=mk(.9,t=>(Math.sin(6.283*523*t)+Math.sin(6.283*659*t)+Math.sin(6.283*784*t))*Math.exp(-t*2.6)*.16+Math.sin(6.283*1046*t)*Math.exp(-Math.max(0,t-.32)*5)*.07);
- let g=0;this.b.groan=mk(1.1,t=>{const f=62+22*Math.sin(6.283*5*t)+25*t,s=((f*t)%1)*2-1;g+=(s-g)*.12;return g*Math.sin(Math.PI*Math.min(1,t/1.1))*1.6});let e=0;this.b.boom=mk(1.8,t=>{const n=R()*2-1;e+=(n-e)*.06;return Math.tanh((e*3+Math.sin(6.283*40*t))*Math.exp(-t*2.5))});
+ let g=0;this.b.groan=mk(1.1,t=>{const f=62+22*Math.sin(6.283*5*t)+25*t,s=((f*t)%1)*2-1;g+=(s-g)*.12;return g*Math.sin(Math.PI*Math.min(1,t/1.1))*1.6});this.b.chute_open=mk(.72,t=>{const n=R()*2-1;return Math.tanh((n*Math.exp(-t*7)+Math.sin(6.283*(110-80*t)*t)*Math.exp(-t*5))*1.7)});this.b.air_wind=mk(1.2,t=>(R()*2-1)*(.08+.12*Math.sin(Math.PI*t/1.2)));let e=0;this.b.boom=mk(1.8,t=>{const n=R()*2-1;e+=(n-e)*.06;return Math.tanh((e*3+Math.sin(6.283*40*t))*Math.exp(-t*2.5))});
  ['rifle','enemy','heavy','reload','click','hit','groan','boom','step','weapon_m4','weapon_ak47','weapon_ump','weapon_mp5','weapon_pistol','weapon_shotgun','weapon_revolver','weapon_sniper','weapon_scene_shot','enemy_rifle','impact_flesh','player_hurt','carry_grunt','zombie_groan','zombie_attack','zombie_death','helicopter_rotor_loop','rain_ambience','siren_ambience','siren_mexico','building_ambience','vehicle_enter','vehicle_depart','metal_door','ammo_pickup','objective_complete'].forEach(n=>{const X={groan:['zumbi.mp3'],click:['gatilhovaziopente-1.mp3'],enemy:['enemy.wav'],boom:['boom-1.mp3'],weapon_pistol:['mrfriends-pistol-shot-233473.mp3']},ss=[...(X[n]||[]),n+'.mp3',n+'.wav','sfx/'+n+'.wav','sfx/'+n+'.mp3'];ss.reduce((q,u)=>q.catch(()=>fetch(u).then(r=>{if(!r.ok)throw 0;return r.arrayBuffer()}).then(a=>c.decodeAudioData(a))),Promise.reject()).then(b=>{{const d0=b.getChannelData(0);let f=0;while(f<d0.length&&Math.abs(d0[f])<.02)f++;this.ld[n]=Math.max(0,f/b.sampleRate-.005)}let m=0;for(let k=0;k<b.numberOfChannels;k++){const d=b.getChannelData(k);for(let i=0;i<d.length;i++)m=Math.max(m,Math.abs(d[i]))}if(m>0&&m<.9)for(let k=0;k<b.numberOfChannels;k++){const d=b.getChannelData(k);for(let i=0;i<d.length;i++)d[i]*=.9/m}this.b[n]=b;if(this.loops[n])this.startLoop(n)}).catch(()=>{if(location.protocol==='file:'&&n!=='groan')this.aud(n,ss)})});VOZ.pre()},
 play(n,v=1,r=1,pos){if(!this.ctx)return;if(pos){let d=1e9;players.forEach(p=>{if(!p.dead)d=Math.min(d,dd(p.pos,pos))});v/=1+d/14}if(v<.02)return;const au=this.au[n];if(au){const c=au.cloneNode();c._sfxName=n;c._sfxBase=v;c.volume=this.audioLevel(n,v);this.active.add(c);c.addEventListener('ended',()=>this.active.delete(c),{once:true});c.playbackRate=r*(.94+R()*.12);c.play().catch(()=>{});return}if(!this.b[n])return;const src=this.ctx.createBufferSource(),gain=this.ctx.createGain();src.buffer=this.b[n];src.playbackRate.value=r*(.94+R()*.12);gain.gain.value=v;src.connect(gain);gain.connect(this.busFor(n));const bf=this.b[n];if(n==='groan'&&bf.duration>3){const t=this.ctx.currentTime;if(this.gt&&t-this.gt<.5)return;this.gt=t;const L=2.2,o=R()*(bf.duration-L);gain.gain.setValueAtTime(0,t);gain.gain.linearRampToValueAtTime(v,t+.15);gain.gain.setValueAtTime(v,t+L-.5);gain.gain.linearRampToValueAtTime(0,t+L);src.start(t,o,L)}else src.start(0,this.ld[n]||0)},
 startLoop(n){const o=this.loops[n];if(!o||o.source||o.audio)return;if(this.b[n]&&this.ctx){const src=this.ctx.createBufferSource(),gain=this.ctx.createGain();src.buffer=this.b[n];src.loop=true;gain.gain.value=o.base;src.connect(gain);gain.connect(this.busFor(n));src.start(0);o.source=src;o.gain=gain;return}if(this.au[n]){const a=this.au[n].cloneNode();a.loop=true;a._sfxName=n;a._sfxBase=o.base;a.volume=this.audioLevel(n,o.base);this.active.add(a);o.audio=a;a.play().catch(()=>{})}},loop(n,v=.45){this.stopLoop(n,0);this.loops[n]={base:v};this.startLoop(n)},
@@ -233,7 +256,17 @@ function building(x,z,w,d,h,c1,c2){
  addBox(x,z-d/2,w,h,t,wm(w));addBox(x-w/2,z,t,h,d,wm(d));addBox(x+w/2,z,t,h,d,wm(d));
  vis(x,h-.8,z+d/2,door,1.6,t,wm(door));vis(x,h+.3,z,w+1,.6,d+1,mat('#2a2a28','#1e1e1c',w/3,d/3,16));
  addBox(x-w/4,z-d/4,2,1.8,2,mat('#78552b','#5c3f1d',1,1,16,2));}
-let LM;
+function multiStoryBuilding(x,z,w,d,c1,c2){
+ const level=3.2,wall=mat(c1,c2,w/3,2,16,1),floor=mat('#716b61','#4c4944',w/3,d/3,16,2),stair=mat('#80684c','#57432e',1,1,16,2),t=.55,door=3.2,win=2.4,stairX=x-w/2+3.1;
+ const slab=(y)=>{const gap=2.5,left=stairX-gap/2,right=stairX+gap/2;addBox((x-w/2+left)/2,z,left-(x-w/2),.25,d,floor,y-.25);addBox((right+x+w/2)/2,z,x+w/2-right,.25,d,floor,y-.25)};
+ const walls=(y,ground)=>{
+  const frontZ=z+d/2,backZ=z-d/2,leftX=x-w/2,rightX=x+w/2,gap=ground?door:win;
+  [frontZ,backZ].forEach((zz,k)=>{const g=k===0&&ground?door:win,seg=(w-g)/2;addBox(x-(g+seg)/2,zz,seg,ground&&k===0?level-.65:1.1,t,wall,y);addBox(x+(g+seg)/2,zz,seg,ground&&k===0?level-.65:1.1,t,wall,y);if(ground&&k===0)addBox(x,zz,g,.65,t,wall,y+level-.65);else addBox(x,zz,g,.8,t,wall,y+2.4)});
+  [leftX,rightX].forEach(xx=>{const seg=(d-win)/2;addBox(xx,z-(win+seg)/2,t,1.1,seg,wall,y);addBox(xx,z+(win+seg)/2,t,1.1,seg,wall,y);addBox(xx,z, t,.8,win,wall,y+2.4)});
+ };
+ slab(0);slab(level);slab(level*2);walls(0,true);walls(level,false);walls(level*2,false);
+ for(let tier=0;tier<2;tier++)for(let i=0;i<11;i++){const rise=level/11,zz=tier===0?z+d/2-1.1-i*.48:z-d/2+1.1+i*.48;addBox(stairX,zz,2.15,rise,.5,stair,tier*level+i*rise)}
+}
 function skyDome(hor,top,sunC,sy,sr){const sk=new THREE.SphereGeometry(250,16,10),cl=[],pa=sk.attributes.position,c1=new THREE.Color(hor),c2=new THREE.Color(top);
  for(let i=0;i<pa.count;i++){const c=c1.clone().lerp(c2,Math.pow(Math.max(0,pa.getY(i)/250),.5));cl.push(c.r,c.g,c.b)}
  sk.setAttribute('color',new THREE.Float32BufferAttribute(cl,3));scene.add(new THREE.Mesh(sk,new THREE.MeshBasicMaterial({vertexColors:true,side:THREE.BackSide,fog:false})));
@@ -306,7 +339,7 @@ function atmos(col,n=120){const a=new Float32Array(n*3),B=M.B;for(let i=0;i<n;i+
 function mkWpn(x,z,k,ph=0){const g=new THREE.Group(),b=new THREE.Mesh(new THREE.BoxGeometry(.25,.28,1.4),new THREE.MeshLambertMaterial({color:0x222222,emissive:WP[k].c})),bm=new THREE.Mesh(new THREE.CylinderGeometry(.5,.5,3,6,1,true),new THREE.MeshBasicMaterial({color:WP[k].c,transparent:true,opacity:.18,side:THREE.DoubleSide}));
  bm.position.y=1.2;g.add(b,bm);g.position.set(x,.9+ph,z);scene.add(g);wpns.push({m:g,b,bm,k,x,z,ph})}
 function setWpnK(w,k){w.k=k;w.b.material.emissive.setHex(WP[k].c);w.bm.material.color.setHex(WP[k].c)}
-function scatterW(){if(M.mode==='pvpbr')return;const ks=Object.keys(WP);for(let i=0;i<8;i++){const q=spot((R()-.5)*2*(M.B-10),(R()-.5)*2*(M.B-10),14);mkWpn(q[0],q[1],pick(ks))}}
+function scatterW(){if(isBRMode(M.mode))return;const ks=Object.keys(WP);for(let i=0;i<8;i++){const q=spot((R()-.5)*2*(M.B-10),(R()-.5)*2*(M.B-10),14);mkWpn(q[0],q[1],pick(ks))}}
 function spawnBRBoxes(){M.brBoxes=[];const ks=Object.keys(WP),edge=M.B-14,minGap=8.5;for(let i=0;i<8;i++){let q=null,best=null,bestGap=-1;for(let t=0;t<160;t++){const c=spot((R()-.5)*2*edge,(R()-.5)*2*edge,8),gap=M.brBoxes.length?Math.min(...M.brBoxes.map(b=>Math.hypot(c[0]-b.x,c[1]-b.z))):Infinity;if(gap>bestGap){best=c;bestGap=gap}if(gap>=minGap){q=c;break}}if(!q&&bestGap>6.9)q=best;if(!q)q=spot((R()-.5)*2*edge,(R()-.5)*2*edge,8);const g=new THREE.Group(),body=new THREE.Mesh(new THREE.BoxGeometry(1.3,.8,1.2),new THREE.MeshLambertMaterial({color:0x79532b})),lid=new THREE.Mesh(new THREE.BoxGeometry(1.34,.18,1.24),new THREE.MeshLambertMaterial({color:0xb78337}));body.position.y=.4;lid.position.y=.89;g.add(body,lid);g.position.set(q[0],0,q[1]);scene.add(g);M.brBoxes.push({m:g,lid,x:q[0],z:q[1],k:pick(ks),open:0})}}
 function fire(x,z){addBox(x,z,1.2,1.1,1.2,mat('#3a2a22','#1e1612',1,1,8,1));
  const a=new THREE.Mesh(new THREE.ConeGeometry(.55,1.7,5),new THREE.MeshBasicMaterial({color:0xff7a12})),b=new THREE.Mesh(new THREE.ConeGeometry(.3,1.1,5),new THREE.MeshBasicMaterial({color:0xffdd55}));
@@ -377,7 +410,7 @@ function mkPlayer(id,x,z,yaw,col){
  const body=humanoid(col,'#d4a574',true);body.position.set(x,0,z);body.traverse(o=>o.layers.set(id));scene.add(body);cam.layers.enable(id===1?2:1);
  const wp=WP[SEL.w[id-1]];let lt=null;if(M.mode[0]==='z'){lt=new THREE.SpotLight(0xfff0d0,2.4,75,.5,.45,1);lt.position.set(.25,-.2,0);const tg=new THREE.Object3D();tg.position.set(0,0,-12);cam.add(lt,tg);lt.target=tg}
  const p={id,cam,pos:cam.position,gun,fl,body,wp,lt,slots:[{k:SEL.w[id-1],ammo:0,res:0},{k:SEL.s[id-1],ammo:WP[SEL.s[id-1]].mag,res:WP[SEL.s[id-1]].res}],cur:0,y:0,vy:0,gr:1,res:wp.res,fon:1,fp:0,hp:100,ammo:wp.mag,kills:0,yaw,pitch:0,last:0,rel:0,dead:false,dmgT:0,hitT:0,kick:0,fT:0,moving:0,rsp:0,isPlayer:true,bob:0};
- body.traverse(o=>o.userData.ent=p);gun.scale.set(...(GS[SEL.w[id-1]]||[1,1,1]));p.kb=id===1;return p}
+ body.traverse(o=>o.userData.ent=p);gun.scale.set(...(GS[SEL.w[id-1]]||[1,1,1]));p.canopy=makeParachute();p.kb=id===1;return p}
 function buildHud(p){
  const d=document.createElement('div');d.className='ph';d.style.left=M.split?(p.id-1)*50+'%':0;d.style.width=M.split?'50%':'100%';
  d.innerHTML='<div class="vg"></div><div class="ch"></div><div class="hm">✕</div><div class="wt"></div><canvas class="mm" width="130" height="130"></canvas><div class="pk"></div><div class="st"><span></span><div class="hbw"><div class="hb"></div></div></div>';
@@ -387,17 +420,17 @@ function buildHud(p){
 function startGame(mode){if(mode==='solo'||mode==='coop'){M.storyRun=1;$('cin').style.display='flex';introIndex=0;showIntroLine();return}M.storyRun=0;launchGame(mode)}
 function launchGame(mode){
  if(typeof THREE==='undefined')return;
- LID++;M.paused=false;M.mapOpen=false;$('tacticalMap').style.display='none';M.mode=mode;M.brBoxes=[];const versus=mode==='pvp'||mode==='pvpbr';M.split=mode==='coop'||versus||mode==='zcoop';SFX.init();
+ LID++;M.paused=false;M.mapOpen=false;$('tacticalMap').style.display='none';M.mode=mode;M.brBoxes=[];const versus=mode==='pvp'||mode==='pvpbr';M.split=mode==='coop'||versus||mode==='zcoop'||mode==='zbrcoop';SFX.init();
  $('cin').style.display='none';$('menu').style.display='none';$('hud').style.display='block';$('rec').style.display='block';if(M.split)$('sl').style.display='block';
  scene=new THREE.Scene();renderer=new THREE.WebGLRenderer({antialias:SET.q>0});renderer.setPixelRatio(1);renderer.shadowMap.enabled=!!SET.sh;renderer.shadowMap.type=THREE.PCFSoftShadowMap;document.body.prepend(renderer.domElement);
- buildMap((mode==='solo'||mode==='coop')&&M.storyRun?'mexico':(mode==='solo'||mode==='coop'?'base':SEL.map));setSceneAudio();
+ buildMap(isBRMode(mode)?'mexico':((mode==='solo'||mode==='coop')&&M.storyRun?'mexico':(mode==='solo'||mode==='coop'?'base':SEL.map)));setSceneAudio();
  players.push(mkPlayer(1,0,M.B-8,0,'#22c55e'));
  if(M.split)players.push(mkPlayer(2,versus?0:5,versus?-(M.B-8):M.B-8,versus?Math.PI:0,'#3b82f6'));
- if(mode==='pvpbr'){players.forEach(p=>{p.brEmpty=1;p.slots=[{k:null,ammo:0,res:0},{k:null,ammo:0,res:0}];p.ammo=0;p.res=0;p.gun.visible=false});picks.forEach(k=>{k.on=0;k.m.visible=false});spawnBRBoxes()}players.forEach(buildHud);applyGfx();
+ if(isBRMode(mode)){players.forEach(p=>{p.brEmpty=1;p.slots=[{k:null,ammo:0,res:0},{k:null,ammo:0,res:0}];p.ammo=0;p.res=0;p.gun.visible=false});picks.forEach(k=>{k.on=0;k.m.visible=false});spawnBRBoxes()}players.forEach(buildHud);applyGfx();if(isBRMode(mode))startAirDrop();
  renderer.domElement.addEventListener('click',()=>renderer.domElement.requestPointerLock());renderer.domElement.requestPointerLock();
  if(mode==='solo'||mode==='coop'){spawnAlly(-4,M.B-11,0);spawnAlly(4,M.B-12,1);if(M.storyRun){beginStoryChapter(1)}else{startMission(1);VOZ.say('Equipe Alfa, aqui é o Sargento Silva. Entrem na área e eliminem os hostis.','SGT. SILVA',1);setTimeout(()=>VOZ.say('Entendido, sargento. Cobrindo vocês!','CB GOMES',1),5500)}}
  else if(versus){if(mode==='pvpbr'){$('mt').textContent='BR: ABRA CAIXAS COM F · ÚLTIMO VIVO VENCE';$('mp').textContent='Sem armas: F abre caixas (Y no controle)';VOZ.say('Pegue uma arma nas caixas e sobreviva.','COMANDO',1)}else{$('mt').textContent='VERSUS: PRIMEIRO A 5 ABATES VENCE';VOZ.say('Combate livre autorizado. Eliminem o alvo.','COMANDO',1)}}
- else{M.brk=4.2;$('mt').textContent='MODO ZUMBI';VOZ.say('Eles estão vindo! Segurem a posição e mirem na cabeça!','SD. REIS',1)}
+ else{M.brk=isZombieBR(mode)?16:4.2;$('mt').textContent=isZombieBR(mode)?'BR ZUMBI · SOBREVIVA E SAQUEIE':'MODO ZUMBI';$('mp').textContent=isZombieBR(mode)?'Abra caixas com F/Y e sobreviva às ondas':'';VOZ.say('Eles estão vindo! Segurem a posição e mirem na cabeça!','SD. REIS',1)}
  last=performance.now();requestAnimationFrame(loop)}
 function resize(){if(!renderer)return;const W=Math.ceil(innerWidth/PIXQ[SET.q]),H=Math.ceil(innerHeight/PIXQ[SET.q]);renderer.setSize(W,H,false);
  players.forEach(p=>{p.cam.aspect=(M.split?W/2:W)/H;p.cam.updateProjectionMatrix()})}
@@ -430,7 +463,7 @@ function missionTick(){
     $('mt').textContent='CHEGUE À ZONA DE EXTRAÇÃO!';startExtractionHelicopter();VOZ.say('Helicóptero a caminho! Corram para a zona de extração!','SGT. SILVA',1)}}
   else{i.textContent='Vá até a zona amarela';M.ext.rotation.y+=M.dt;if(players.some(p=>!p.dead&&dd(p.pos,M.ext.position)<6)){stopExtractionHelicopter();SFX.play('objective_complete',.9);VOZ.say('Excelente trabalho! Próxima parada: a selva.','SGT. SILVA',1);loadMap('jungle');startMission(5)}}}}
 function loadMap(name){
- stopExtractionHelicopter();const keep=new Set([...players.map(p=>p.cam),...players.map(p=>p.body),...allies.map(a=>a.g)]);
+ stopExtractionHelicopter();const keep=new Set([...players.map(p=>p.cam),...players.map(p=>p.body),...players.map(p=>p.canopy),...allies.map(a=>a.g)]);
  scene.children.slice().forEach(o=>{if(!keep.has(o))scene.remove(o)});
  obst=[];OM=[];gens=[];fx=[];fires=[];picks=[];wpns=[];enemies=[];buildMap(name);setSceneAudio();
  players.forEach((p,i)=>{p.dead=false;p.hp=Math.min(100,p.hp+50);p.pos.set(i*5,1.9,M.B-8);p.y=0;p.vy=0;p.yaw=0;p.res=p.wp.res;p.ammo=p.wp.mag;p.rel=0});
@@ -468,7 +501,7 @@ function missionTick2(m,i){
  else{i.textContent='Vá até a zona amarela';M.ext.rotation.y+=M.dt;if(players.some(p=>!p.dead&&dd(p.pos,M.ext.position)<6)){stopExtractionHelicopter();SFX.play('objective_complete',.9);
   if(d.nx){VOZ.say(d.nx[1],'SGT. SILVA',1);loadMap(d.nx[0]);startMission(m+1)}else{VOZ.say('Missão cumprida, equipe!','SGT. SILVA',1);end('OPERAÇÃO CONCLUÍDA!','Todas as 15 missões foram cumpridas.')}}}}
 function zombieTick(){
- $('mp').textContent='Onda '+M.wave+' | Zumbis: '+enemies.length;
+ const dropping=players.some(p=>p.airState==='ride'||p.airState==='fall'||p.airState==='glide');$('mp').textContent=dropping?'ESPAÇO / A: SALTAR · WASD / ANALÓGICO: ESCOLHER ONDE POUSAR':isZombieBR(M.mode)?'BR ZUMBI · Onda '+M.wave+' | Zumbis: '+enemies.length+' · Caixas: F / Y':'Onda '+M.wave+' | Zumbis: '+enemies.length;if(isZombieBR(M.mode)&&!M.brDropDone)return;
  if(M.brk>0){M.brk-=M.dt;if(M.brk<=0){M.wave++;const n=Math.min(6+M.wave*4,45);$('mt').textContent='ONDA '+M.wave+': SOBREVIVA!';
   for(let i=0;i<n;i++){const a=R()*6.28,q=spot(Math.cos(a)*80,Math.sin(a)*80,14);spawnEnemy(q[0],q[1],'zom')}
   VOZ.say('Onda '+M.wave+'! Preparem-se!','SD. REIS',1)}}
@@ -486,7 +519,7 @@ addEventListener('gamepadconnected',setPad);addEventListener('gamepaddisconnecte
 function move(pos,dx,dz,r,y=0){const ox=pos.x,oz=pos.z;if(!blocked(pos.x+dx,pos.z,r,y))pos.x+=dx;if(!blocked(pos.x,pos.z+dz,r,y))pos.z+=dz;return Math.hypot(pos.x-ox,pos.z-oz)}
 function updPlayer(p,dt){
  const h=p.h;
- if(p.dead){p.cam.position.y=Math.max(.4,p.cam.position.y-dt*3);p.cam.rotation.set(-1.1,p.yaw,0);p.body.visible=false;
+ if(p.dead){p.canopy.visible=false;p.cam.position.y=Math.max(.4,p.cam.position.y-dt*3);p.cam.rotation.set(-1.1,p.yaw,0);p.body.visible=false;
   if(M.mode==='pvp'){p.rsp-=dt;if(p.rsp<=0){const o=players.find(q=>q!==p),S=[[0,88],[0,-88],[-85,0],[85,0],[-60,60],[60,-60]].map(a=>spot(a[0],a[1],6)).sort((a,b)=>dd({x:b[0],z:b[1]},o.pos)-dd({x:a[0],z:a[1]},o.pos))[0];
    p.dead=false;p.hp=100;p.ammo=p.wp.mag;p.res=p.wp.res;p.rel=0;p.y=0;p.vy=0;p.pos.set(S[0],1.9,S[1]);p.yaw=Math.atan2(-S[0],-S[1])}}return}
  p.body.visible=true;
@@ -494,7 +527,19 @@ function updPlayer(p,dt){
  if(p.kb){mx=(keys.KeyD?1:0)-(keys.KeyA?1:0);mz=(keys.KeyW?1:0)-(keys.KeyS?1:0);p.yaw-=mdx*.0022*SET.sens;p.pitch-=mdy*.0022*SET.sens*(SET.inv?-1:1);fire=mouseDown;rel=keys.KeyR;spr=keys.ShiftLeft;jmp=keys.Space;fk=keys.KeyF;ek=keys.KeyE;qk=keys.KeyQ||WHL;zm=mouseR;if(keys.Digit1)setSlot(p,0);if(keys.Digit2)setSlot(p,1)}
  if(pad){const z=v=>Math.abs(v)<.2?0:v,b=i=>pad.buttons[i]&&pad.buttons[i].value>.4;mx+=z(pad.axes[0]);mz-=z(pad.axes[1]);p.yaw-=z(pad.axes[2])*2.8*SET.pads*dt;p.pitch-=z(pad.axes[3])*2.2*SET.pads*dt*(SET.inv?-1:1);
   fire=fire||b(7);rel=rel||b(2);spr=spr||b(4)||b(10);jmp=jmp||b(0);fk=fk||b(3);ek=ek||b(1);qk=qk||b(5);zm=zm||b(6)}
- if(M.mode==='pvpbr'){if(fk&&!p.fp)openBRBox(p);p.fp=fk?1:0}else if(p.lt){if(fk&&!p.fp)p.fon=!p.fon;p.fp=fk?1:0;p.lt.intensity=p.fon?2.4:0}else{if(fk&&!p.fp&&M.storyAct)storyInteract(p);p.fp=fk?1:0}
+ if(p.airState==='ride'){
+  if(jmp){p.airState='fall';p.vy=-2;SFX.play('carry_grunt',.35)}
+  else{p.cam.rotation.set(p.pitch,p.yaw,0);p.cam.position.y=1.9+p.y;p.body.position.set(p.pos.x,p.y,p.pos.z);p.body.rotation.y=p.yaw+Math.PI;p.h.pk.style.display='none';return}
+ }
+ if(p.airState==='fall'||p.airState==='glide'){
+  const sn=Math.sin(p.yaw),cs=Math.cos(p.yaw),speed=p.airState==='glide'?8:5.5;
+  move(p.pos,(cs*mx-sn*mz)*speed*dt,(-sn*mx-cs*mz)*speed*dt,.55,p.y);
+  const ground=gh(p.pos.x,p.pos.z,p.y);
+  if(p.airState==='fall'){p.vy=Math.max(-18,p.vy-9*dt);p.y+=p.vy*dt;const openAt=Math.max(18,ground+4);if(p.y>ground+.6&&p.y<=openAt){p.vy=0;p.airState='glide';p.canopy.visible=true;SFX.play('chute_open',.8)}else if(p.y<=ground+.6){p.y=ground;p.vy=0;p.airState='';p.canopy.visible=false;SFX.play('step',.65)}}
+  else{p.y=Math.max(ground,p.y-2.8*dt);if(p.y<=ground){p.airState='';p.canopy.visible=false;SFX.play('step',.65)}}
+  p.canopy.position.set(p.pos.x,p.y,p.pos.z);p.cam.rotation.set(p.pitch,p.yaw,0);p.cam.position.y=1.9+p.y;p.body.position.set(p.pos.x,p.y,p.pos.z);p.body.rotation.y=p.yaw+Math.PI;syncAirWind();p.h.pk.style.display='none';return
+ }
+ if(isBRMode(M.mode)){if(fk&&!p.fp)openBRBox(p);p.fp=fk?1:0}else if(p.lt){if(fk&&!p.fp)p.fon=!p.fon;p.fp=fk?1:0;p.lt.intensity=p.fon?2.4:0}else{if(fk&&!p.fp&&M.storyAct)storyInteract(p);p.fp=fk?1:0}
  if(qk&&!p.qp)setSlot(p,1-p.cur);p.qp=qk?1:0;
  if(ek&&!p.ep&&p.near)giveWpn(p,p.near);p.ep=ek?1:0;
  const tf=zm?SET.fov*p.wp.zf:SET.fov;p.cam.fov+=(tf-p.cam.fov)*Math.min(1,dt*12);p.cam.updateProjectionMatrix();
@@ -502,7 +547,7 @@ function updPlayer(p,dt){
  p.pitch=Math.max(-1.4,Math.min(1.4,p.pitch));
  if(M.pick>0){mx=mz=0;fire=false}const l=Math.hypot(mx,mz);if(l>1){mx/=l;mz/=l}const sp=M.carry?3.4:(spr?10.5:6.5),s=Math.sin(p.yaw),c=Math.cos(p.yaw);
  p.moving=move(p.pos,(c*mx-s*mz)*sp*dt,(-s*mx-c*mz)*sp*dt,.6,p.y)>0?1:0;
- const g=gh(p.pos.x,p.pos.z,p.y);p.vy-=24*dt;p.y+=p.vy*dt;if(p.y<=g){p.y=g;p.vy=0;p.gr=1}else p.gr=0;
+ const g=gh(p.pos.x,p.pos.z,p.y);p.vy-=24*dt;p.y+=p.vy*dt;if(p.y>g+.6&&p.y>=8&&p.y<=Math.max(18,g+4)&&p.vy< -7){p.airState='glide';p.vy=0;p.canopy.visible=true;SFX.play('chute_open',.8);syncAirWind()}if(p.y<=g){p.y=g;p.vy=0;p.gr=1;p.canopy.visible=false;syncAirWind()}else p.gr=0;
  if(jmp&&p.gr){p.vy=8.4;p.gr=0}
  p.bob+=p.gr*p.moving*dt*(spr?14:10);{const st=Math.floor(p.bob/Math.PI);if(p.gr&&p.moving&&st!==p.stp){p.stp=st;SFX.play('step',spr?.62:.44)}}
  p.cam.rotation.set(p.pitch,p.yaw,0);p.cam.position.y=1.9+p.y+Math.sin(p.bob)*.06*p.moving*p.gr-(M.pick>0?.9*Math.sin(Math.PI*(1.4-M.pick)/1.4):0);
@@ -550,12 +595,12 @@ function hurt(t,dmg,from){
  if(t.isPlayer){if(t.dead)return;t.hp-=dmg;t.dmgT=.35;SFX.play('player_hurt',.9);if(t.hp<=0)die(t,from)}
  else{t.hp-=dmg;if(t.hp<=0){scene.remove(t.g);allies.splice(allies.indexOf(t),1);VOZ.say('Homem ao chão! Estou sem apoio!','SD. REIS',1)}}}
 function die(p,by){
- p.dead=true;p.rsp=2;
+ p.dead=true;p.rsp=2;p.airState='';p.canopy.visible=false;syncAirWind();
  if(M.mode==='pvpbr'){const win=by&&by.isPlayer?by:players.find(q=>q!==p);if(win)win.kills++;end('JOGADOR '+(win?win.id:'?')+' VENCEU!','Último jogador sobrevivente. Placar: '+players.map(q=>'P'+q.id+' '+q.kills).join(' x '))}
  else if(M.mode==='pvp'){if(by&&by.isPlayer){by.kills++;if(by.kills>=5)end('JOGADOR '+by.id+' VENCEU!','Placar: '+players.map(q=>'P'+q.id+' '+q.kills).join(' x '))}}
  else if(players.every(q=>q.dead))end('ESQUADRÃO ELIMINADO','Você caiu em combate. Tente de novo!')}
 let creditsActive=false,creditsTimer=0;
-function end(t,d){if(M.over)return;M.over=true;stopExtractionHelicopter();stopSceneAudio();document.exitPointerLock();if(M.storyRun&&M.storyAct===4){startCredits();return}MUS.set('menu');$('et').textContent=t;$('ed').textContent=d+'  Abates: '+players.map(q=>'P'+q.id+' '+q.kills).join(' | ');$('end').style.display='flex'}
+function end(t,d){if(M.over)return;M.over=true;stopExtractionHelicopter();SFX.stopLoop('air_wind',.35);M.airWind=0;if(M.airDrop){scene.remove(M.airDrop.g);M.airDrop=null}stopSceneAudio();document.exitPointerLock();if(M.storyRun&&M.storyAct===4){startCredits();return}MUS.set('menu');$('et').textContent=t;$('ed').textContent=d+'  Abates: '+players.map(q=>'P'+q.id+' '+q.kills).join(' | ');$('end').style.display='flex'}
 function startCredits(){creditsActive=true;stopVoice();stopExtractionHelicopter();stopSceneAudio();MUS.mode='';MUS.set('memorial');$('end').style.display='none';const roll=$('creditsRoll');roll.onanimationend=finishCredits;roll.classList.remove('rolling');void roll.offsetWidth;roll.classList.add('rolling');$('credits').style.display='flex';clearTimeout(creditsTimer);creditsTimer=setTimeout(finishCredits,36000)}
 function finishCredits(){if(!creditsActive)return;creditsActive=false;clearTimeout(creditsTimer);returnToMenu()}
 function returnToMenu(){creditsActive=false;clearTimeout(creditsTimer);document.exitPointerLock();stopVoice();stopExtractionHelicopter();stopSceneAudio();if(typeof speechSynthesis!=='undefined')speechSynthesis.cancel();LID++;if(renderer){renderer.domElement.remove();renderer.dispose();renderer=null}document.querySelectorAll('.ph').forEach(e=>e.remove());scene=null;players=[];enemies=[];allies=[];obst=[];OM=[];fx=[];gens=[];fires=[];picks=[];wpns=[];PADS=[];EMB=null;['end','credits','pause','opts','audioOpts','hud','rec','sl','sub','cin','tacticalMap'].forEach(id=>$(id).style.display='none');$('menu').style.display='flex';$('mm').style.display='flex';$('pad').style.display='block';$('setup').style.display='none';$('setup').innerHTML='';Object.assign(M,{mode:'',split:false,over:false,paused:false,mapOpen:false,storyRun:0,storyAct:0,storyStep:0,storyItems:[],storyDisguise:0,heliAmbience:0,cut:0});MUS.set('menu')}
@@ -600,12 +645,12 @@ function loop(now,id=LID){
  if(M.over||id!==LID)return;requestAnimationFrame(t=>loop(t,id));
  const dt=Math.min(.05,(now-last)/1000);last=now;{const st=[...navigator.getGamepads()].some(g=>g&&g.buttons[9]&&g.buttons[9].pressed);if(st&&!M.sp)pause(!M.paused);M.sp=st}if(M.paused||M.cut||M.mapOpen)return;M.t+=dt;M.dt=dt;
  PADS=[...(navigator.getGamepads?navigator.getGamepads():[])].filter(g=>g&&g.connected);
- players.forEach(p=>updPlayer(p,dt));mdx=mdy=0;WHL=0;
+ airDropTick(dt);players.forEach(p=>updPlayer(p,dt));mdx=mdy=0;WHL=0;
  enemies.slice().forEach(e=>updEnemy(e,dt));allies.slice().forEach(a=>updAlly(a,dt));
  if(M.mode==='solo'||M.mode==='coop')missionTick();else if(M.mode[0]==='z')zombieTick();
  if(EMB){const a=EMB.geometry.attributes.position.array;for(let i=0;i<a.length;i+=3){a[i+1]+=dt*(.8+(i%7)*.15);a[i]+=dt*(1.2+Math.sin(M.t+i)*.6);if(a[i+1]>14)a[i+1]=0;if(a[i]>M.B)a[i]=-M.B}EMB.geometry.attributes.position.needsUpdate=true}
  wpns.forEach(w=>{w.m.rotation.y+=dt*1.5;w.m.position.y=.9+w.ph+Math.sin(M.t*2+w.x)*.1});
- players.forEach(p=>{const b=M.mode==='pvpbr'&&!p.dead?M.brBoxes.find(q=>!q.open&&dd(p.pos,q)<3.4):null,w=!b?wpns.find(w=>dd(p.pos,w)<2.2&&Math.abs(p.y-w.ph)<1.6):null;p.near=w||null;p.brNear=b||null;p.h.pk.style.display=b||w?'block':'none';if(b)p.h.pk.textContent=(p.kb?'F':'Y')+': abrir caixa e pegar '+WP[b.k].n;else if(w)p.h.pk.textContent=(p.kb?'E':'B')+': pegar '+WP[w.k].n});
+ players.forEach(p=>{const b=isBRMode(M.mode)&&!p.dead?M.brBoxes.find(q=>!q.open&&dd(p.pos,q)<3.4):null,w=!b?wpns.find(w=>dd(p.pos,w)<2.2&&Math.abs(p.y-w.ph)<1.6):null;p.near=w||null;p.brNear=b||null;p.h.pk.style.display=b||w?'block':'none';if(b)p.h.pk.textContent=(p.kb?'F':'Y')+': abrir caixa e pegar '+WP[b.k].n;else if(w)p.h.pk.textContent=(p.kb?'E':'B')+': pegar '+WP[w.k].n});
  fires.forEach(f=>{f.t+=dt;f.L.intensity=2+Math.sin(f.t*17)*.35+Math.sin(f.t*41)*.2;f.a.scale.set(1+Math.sin(f.t*11)*.15,1+Math.sin(f.t*13)*.3,1);f.b.scale.y=1+Math.sin(f.t*19)*.3});
  picks.forEach(k=>{if(k.on){k.m.rotation.y+=dt*2;k.m.position.y=.7+k.ph+Math.sin(M.t*3)*.1;
   const p=players.find(q=>!q.dead&&dd(q.pos,k)<2&&Math.abs(q.y-k.ph)<1.6);
@@ -645,7 +690,7 @@ function beginStoryChapter(n){if(n===4)return cemSetup();M.noFire=0;M.carry=0;M.
  if(n===2){loadMap('lab');M.storyAct=2;M.storyStep=0;storyBanner('ATO II — INTERROGATÓRIO: elimine a escolta e recupere as coordenadas');for(let i=0;i<5;i++){const q=spot((R()-.5)*48,-20+(R()-.5)*30,10);spawnEnemy(q[0],q[1],'sol')}showStoryCutscene({set:'room',title:'ATO II · INTERROGATÓRIO',text:'CHEFE: A instalação fica sob o complexo industrial, na passagem ao norte. A senha do reator é SIERRA-09. SILVA: Você vai cooperar. A equipe já está no local; mantenham o rádio em silêncio.',who:'CHEFE DO CARTEL · SGT. SILVA',audio:'cena_interrogatorio.mp3',voice:'SGT. SILVA'})}
  if(n===3){loadMap('lab');M.storyAct=3;M.storyStep=3;M.storyDisguise=0;M.storyTarget=null;storySetTarget(0,8,'SENHA · TERMINAL DA BOMBA',0xff4444);storyBanner('ATO III — BOMBA: use a senha SIERRA-09 e pressione F');storySay('SGT. SILVA','Bomba localizada no núcleo do laboratório. Cheguem ao terminal e insiram a senha SIERRA-09.',.9,'story_bomba.mp3')}
 }
-function storyTick(){const d=M.storyAct;if(!d)return;if(M.pick>0)M.pick-=M.dt;if(M.pickSt&&M.pick<=.7){M.pickSt=0;addCarry()}
+function storyTick(){const d=M.storyAct;if(!d)return;if(M.pick>0)M.pick-=M.dt;if(M.pickSt&&M.pick<=.7){M.pickSt=0;addCarry()}if(d===1&&M.map==='torre'&&players.some(p=>p.airState)){$('mp').textContent='SALTO PARA A COBERTURA · WASD / ANALÓGICO: ESCOLHER ONDE POUSAR';return}
  if(d===1){if(M.storyStep===0){$('mp').textContent='Hostis na zona: '+enemies.length+'  |  Reúna-se com a equipe local';if(!enemies.length){M.storyStep=1;storyDocs();storyBanner('ATO I — REÚNA-SE com a equipe local (marcador ciano)');storySay('CB. GOMES','Praça segura. A equipe local nos espera adiante.',.9,'story_praca.mp3');}}
  else if(M.storyStep===1){const o=M.storyItems[0];$('mp').textContent='Reúna-se com a equipe local (marcador ciano)';if(o&&players.some(p=>!p.dead&&dd(p.pos,o)<5)){M.storyStep=2;storyClearItems();showStoryCutscene({set:'city',title:'PLANO DE ASSALTO',text:'RAMOS: Capitão, o chefe está no topo da Torre Estrela, com seguranças em todos os andares. SILVA: Helicóptero pronto. Saltamos na cobertura e varremos de cima a baixo. GOMES: Capturamos o chefe vivo e saímos pelo estacionamento.',who:'TEN. RAMOS · SGT. SILVA · CB. GOMES',audio:'cena_plano.mp3',voice:'SGT. SILVA'},()=>{showStoryCutscene({set:'heli',title:'SALTO · TORRE ESTRELA',text:'SILVA: Sobrevoando a Torre Estrela! Saltem agora! ALVES: Entrem pelo teto, varram o prédio e capturem o chefe vivo!',who:'SGT. SILVA · CAP. ALVES',audio:'cena_salto.mp3',voice:'SGT. SILVA'},jumpIn)})}}
  else if(M.storyStep===3){carryTick()}else if(M.storyStep===2){if(M.map==='torre')torreTick();else $('mp').textContent=M.storyBoss&&M.storyBoss.downed?'Chefe ferido: aproxime-se e pressione F para capturar':'Chefe do cartel: '+Math.ceil(M.storyBoss?.hp||0)+' / 520';if(M.storyBoss?.downed)storyBanner('ATO I — PRESSIONE F perto do chefe para capturá-lo vivo');}}
@@ -685,10 +730,10 @@ function showStoryCutscene(o,cb){M.cut=1;document.exitPointerLock();const nx=$('
  const fin=()=>{csClose();stopVoice();$('cin').classList.remove('rainfx');$('cin').style.display='none';nx.onclick=()=>introNext();sk.onclick=()=>beginStory();M.cut=0;if(cb)cb()};nx.onclick=sk.onclick=fin}
 function buildMexico(){M.B=96;M.map='mexico';scene.background=new THREE.Color(0xff8a4a);scene.fog=new THREE.FogExp2(0xb8693f,.009);scene.add(new THREE.HemisphereLight(0xffc090,0x5a4a40,1.15));
  const dl=new THREE.DirectionalLight(0xffa04a,.95);dl.position.set(-80,60,-120);sunSh(dl);scene.add(dl);skyDome(0xff8a4a,0x4a3a6a,0xffc070,24,16);
- const fl=new THREE.Mesh(new THREE.PlaneGeometry(220,220),mat('#4a4a4e','#3a3a3e',60,60,16));fl.rotation.x=-Math.PI/2;fl.receiveShadow=true;scene.add(fl);
+ const sea=new THREE.Mesh(new THREE.PlaneGeometry(420,420),new THREE.MeshBasicMaterial({color:0x12394b}));sea.rotation.x=-Math.PI/2;sea.position.y=-.55;scene.add(sea);const fl=new THREE.Mesh(new THREE.PlaneGeometry(220,220),mat('#4a4a4e','#3a3a3e',60,60,16));fl.rotation.x=-Math.PI/2;fl.receiveShadow=true;scene.add(fl);
  const wall=mat('#5a4a44','#43362f',60,2,16,1);addBox(0,-98,200,9,2,wall);addBox(0,98,200,9,2,wall);addBox(-98,0,2,9,200,wall);addBox(98,0,2,9,200,wall);
  const C=[['#a08c75','#665b50'],['#77766d','#424f54'],['#9c8975','#63594f']];let n=0;
- [-36,36,-64,64,-86,86].forEach((x,i)=>[-42,-12,18,48,76].forEach((z,j)=>{if(i>3&&j%2)return;const h=14+((i*5+j*7)%4)*5,c=C[n++%3];building(x,z,i>3?12:20,16,h,c[0],c[1])}));
+ [-36,36,-64,64,-86,86].forEach((x,i)=>[-42,-12,18,48,76].forEach((z,j)=>{if(i>3&&j%2)return;const h=14+((i*5+j*7)%4)*5,c=C[n++%3];if((i===0&&j===4)||(i===2&&j===0)||(i===3&&j===3))multiStoryBuilding(x,z,16,14,c[0],c[1]);else building(x,z,i>3?12:20,16,h,c[0],c[1])}));
  [[-44,-72],[44,-72]].forEach((p,i)=>building(p[0],p[1],16,14,16+i*4,C[i][0],C[i][1]));building(0,-80,32,14,34,'#6a7a9a','#3a4a5a');
  addBox(0,0,8,1,8,mat('#8a8070','#6a6050',2,2,16,2));[[-6,30],[7,16],[-7,-18],[6,-46],[-5,58]].forEach((p,i)=>{const cm=mat(['#aa2222','#2244aa','#bbbbbb'][i%3],'#222',1,1,8);addBox(p[0],p[1],2.2,1.1,4.4,cm);vis(p[0],1.45,p[1],1.8,.7,2.2,cm)});
  [[-14,40],[14,-6],[-14,-30],[14,-56],[0,66]].forEach(p=>fire(p[0],p[1]));for(let i=0;i<14;i++){const q=spot((R()-.5)*170,(R()-.5)*170,14);mkPick(q[0],q[1])}scatterW();OM=obst.map(o=>o.mesh)}
@@ -716,7 +761,7 @@ function buildCem(){M.B=40;M.map='cem';scene.background=new THREE.Color(0x8a8f9a
 function cemSetup(){loadMap('cem');M.storyAct=4;M.storyStep=0;M.resp=0;M.noFire=1;M.carry=0;const dk=o=>{if(o.material&&o.material.color)o.material.color.set(0x222222)};players.forEach(p=>{p.gun.visible=false;p.body.traverse(dk)});allies.forEach(a=>a.g.traverse(dk));
  storyBanner('CEMITÉRIO — aproxime-se do caixão e pressione F para prestar respeito');showStoryCutscene({set:'cem',suit:1,title:'CEMITÉRIO · ÚLTIMA DESPEDIDA',text:'GOMES: Dias depois, todos de terno, nos despedimos do Sargento Silva. REIS: Ele deu a vida para que milhões vivessem. Hoje a equipe presta o último respeito.',who:'CB. GOMES · SD. REIS',audio:'cena_velorio.mp3',voice:'SD. REIS'})}
 function jumpIn(){loadMap('torre');M.storyHeli=null;M.storyTarget=null;M.tw=0;
- players.forEach((p,i)=>{p.pos.set(-20+i*4,1.9,i?3:-3);p.y=34;p.vy=0;p.yaw=Math.PI/2;p.pitch=-.35});
+ players.forEach((p,i)=>{p.pos.set(-20+i*4,1.9,i?3:-3);p.y=34;p.vy=-1;p.airState='fall';p.canopy.visible=false;p.yaw=Math.PI/2;p.pitch=-.35});
  allies.forEach((a,i)=>a.pos.set(-16,18,i?5:-5));
  const E=(y,cx,cz,sp,n)=>{for(let i=0;i<n;i++)tSpawn(y,cx,cz,sp,'sol',0)};
  E(18,10,0,36,2);E(12,-18,0,16,2);E(12,18,0,22,2);E(6,6,0,14,2);E(6,22,-6,10,1);E(6,37,-8,3,1);E(6,37,8,3,1);
